@@ -545,6 +545,15 @@ class RoboVacEntity(StateVacuumEntity):
 
         _LOGGER.debug("Updating entity values from data points: %s", self.tuyastatus)
 
+        # Log any large binary DPS payloads to help identify map stream codes.
+        # Remove this block once the correct DPS codes are known for your model.
+        for _code, _val in (self.tuyastatus or {}).items():
+            if isinstance(_val, str) and len(_val) > 40:
+                _LOGGER.warning(
+                    "MAP_HUNT | DPS %s | %d chars | %s…",
+                    _code, len(_val), _val[:60],
+                )
+
         # Update common attributes for all models
         self._update_battery_level()
         self._update_state_and_error()
