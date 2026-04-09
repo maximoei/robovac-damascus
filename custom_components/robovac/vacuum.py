@@ -31,6 +31,7 @@ from homeassistant.components.vacuum import (
     VacuumActivity,
     VacuumEntityFeature,
 )
+from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONF_ACCESS_TOKEN,
@@ -46,7 +47,7 @@ from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import CONF_VACS, DOMAIN, PING_RATE, REFRESH_RATE, TIMEOUT
+from .const import CONF_VACS, DOMAIN, PING_RATE, REFRESH_RATE, SIGNAL_MAP_UPDATE, TIMEOUT
 from .errors import getErrorMessage
 from .vacuums.base import RobovacCommand, RoboVacEntityFeature, TuyaCodes, TUYA_CONSUMABLES_CODES
 from .robovac import ModelNotSupportedException, RoboVac
@@ -551,6 +552,16 @@ class RoboVacEntity(StateVacuumEntity):
 
         # Update model-specific attributes
         self._update_cleaning_stats()
+
+        # Notify the companion map camera entity (if any) about the latest
+        # DPS state so it can decode and render new map frames.  Guard
+        # against the rare case where hass is not yet set (early callbacks).
+        if self.hass is not None:
+            async_dispatcher_send(
+                self.hass,
+                f"{SIGNAL_MAP_UPDATE}_{self.unique_id}",
+                self.tuyastatus,
+            )
 
     def _get_dps_code(self, code_name: str) -> str:
         """Get the DPS code for a specific function.
