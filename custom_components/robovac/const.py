@@ -11,3 +11,8 @@ TIMEOUT = 5
 # contain map data.  Full signal name: f"{SIGNAL_MAP_UPDATE}_{unique_id}"
 # Payload: the full tuyastatus dict (str → Any).
 SIGNAL_MAP_UPDATE = f"{DOMAIN}_map_update"
+
+# Dispatcher signal fired by RoboVacEntity when the vacuum transitions to
+# the DOCKED state.  Full signal name: f"{SIGNAL_VACUUM_DOCKED}_{unique_id}"
+# No payload – the subscriber should fetch the latest cloud map.
+SIGNAL_VACUUM_DOCKED = f"{DOMAIN}_vacuum_docked"

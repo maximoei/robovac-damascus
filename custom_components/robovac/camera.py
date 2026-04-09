@@ -34,13 +34,14 @@ from typing import Any
 
 from homeassistant.components.camera import Camera, CameraEntityFeature
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_ID, CONF_MODEL, CONF_NAME
+from homeassistant.const import CONF_ID, CONF_MODEL, CONF_NAME, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import CONF_VACS, DOMAIN, SIGNAL_MAP_UPDATE
+from .const import CONF_VACS, DOMAIN, SIGNAL_MAP_UPDATE, SIGNAL_VACUUM_DOCKED
+from .eufy_cloud_map import EufyCloudMapFetcher
 from .map_renderer import VacuumMapRenderer
 from .proto_parser import (
     parse_dynamic_data,
@@ -89,7 +90,14 @@ async def async_setup_entry(
             item.get(CONF_NAME, item_id),
             model_code,
         )
-        entities.append(VacuumMapCamera(item, map_dps))
+        entities.append(
+            VacuumMapCamera(
+                item,
+                map_dps,
+                username=config_entry.data.get(CONF_USERNAME, ""),
+                password=config_entry.data.get(CONF_PASSWORD, ""),
+            )
+        )
 
     async_add_entities(entities)
 
@@ -112,11 +120,18 @@ class VacuumMapCamera(Camera):
     _attr_supported_features = CameraEntityFeature(0)
     _attr_should_poll = False
 
-    def __init__(self, item: dict[str, Any], map_dps: MapDpsCodes) -> None:
+    def __init__(
+        self,
+        item: dict[str, Any],
+        map_dps: MapDpsCodes,
+        username: str = "",
+        password: str = "",
+    ) -> None:
         super().__init__()
         self._vacuum_id: str = item[CONF_ID]
         self._map_dps = map_dps
         self._renderer = VacuumMapRenderer()
+        self._cloud_fetcher = EufyCloudMapFetcher(username, password) if username else None
 
         self._attr_unique_id = f"{item[CONF_ID]}_map"
         self._attr_device_info = DeviceInfo(
@@ -135,6 +150,15 @@ class VacuumMapCamera(Camera):
             async_dispatcher_connect(self.hass, signal, self._on_dps_update)
         )
 
+        # Subscribe to docked-state transitions to trigger cloud map fetch.
+        if self._cloud_fetcher is not None:
+            docked_signal = f"{SIGNAL_VACUUM_DOCKED}_{self._vacuum_id}"
+            self.async_on_remove(
+                async_dispatcher_connect(
+                    self.hass, docked_signal, self._on_vacuum_docked
+                )
+            )
+
         # Seed initial state from any DPS data already held by the vacuum entity
         vacuum_entity = self.hass.data.get(DOMAIN, {}).get(CONF_VACS, {}).get(
             self._vacuum_id
@@ -145,6 +169,52 @@ class VacuumMapCamera(Camera):
     # ------------------------------------------------------------------
     # Camera interface
     # ------------------------------------------------------------------
+
+    def _on_vacuum_docked(self) -> None:
+        """Triggered when the vacuum transitions to DOCKED state.
+
+        Schedules an async cloud map fetch so the camera shows the floor
+        map of the completed cleaning session.
+        """
+        _LOGGER.debug(
+            "Vacuum %s docked – scheduling cloud map fetch", self._vacuum_id
+        )
+        self.hass.async_create_task(self._fetch_cloud_map())
+
+    async def _fetch_cloud_map(self) -> None:
+        """Fetch the latest clean map from Eufy cloud and feed it to the renderer."""
+        if self._cloud_fetcher is None:
+            return
+        try:
+            raw = await self._cloud_fetcher.get_latest_map(self._vacuum_id)
+        except Exception as exc:
+            _LOGGER.warning(
+                "Cloud map fetch failed for %s: %s", self._vacuum_id, exc
+            )
+            return
+
+        if raw is None:
+            _LOGGER.debug("Cloud map fetch returned no data for %s", self._vacuum_id)
+            return
+
+        # Try to parse the binary blob as a stream.Map protobuf frame.
+        try:
+            frame = parse_map_frame(raw)
+            if frame is not None:
+                self._renderer.update_map(frame)
+                self.async_write_ha_state()
+                _LOGGER.debug(
+                    "Cloud map applied for %s (%d bytes)", self._vacuum_id, len(raw)
+                )
+            else:
+                _LOGGER.debug(
+                    "Cloud map bytes for %s could not be parsed as stream.Map",
+                    self._vacuum_id,
+                )
+        except Exception as exc:
+            _LOGGER.warning(
+                "Failed to parse cloud map for %s: %s", self._vacuum_id, exc
+            )
 
     async def async_camera_image(
         self,

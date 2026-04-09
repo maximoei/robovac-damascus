@@ -113,6 +113,9 @@ def get_eufy_vacuums(self: dict[str, Any]) -> requests.Response:
     settings_response = response.json()
 
     self[CONF_CLIENT_ID] = user_response["user_info"]["id"]
+    # Store the regional API host so cloud map fetching can authenticate
+    # without repeating the login step.
+    self["eufy_request_host"] = user_response["user_info"].get("request_host", "")
     if (
         "tuya_home" in settings_response["setting"]["home_setting"]
         and "tuya_region_code"

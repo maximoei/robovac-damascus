@@ -47,7 +47,7 @@ from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import CONF_VACS, DOMAIN, PING_RATE, REFRESH_RATE, SIGNAL_MAP_UPDATE, TIMEOUT
+from .const import CONF_VACS, DOMAIN, PING_RATE, REFRESH_RATE, SIGNAL_MAP_UPDATE, SIGNAL_VACUUM_DOCKED, TIMEOUT
 from .errors import getErrorMessage
 from .vacuums.base import RobovacCommand, RoboVacEntityFeature, TuyaCodes, TUYA_CONSUMABLES_CODES
 from .robovac import ModelNotSupportedException, RoboVac
@@ -381,6 +381,7 @@ class RoboVacEntity(StateVacuumEntity):
         self.tuyastatus: dict[str, Any] | None = None
         self._last_no_data_warning_time: float = 0
         self._no_data_warning_logged: bool = False
+        self._last_activity: VacuumActivity | None = None
 
         # Initialize the RoboVac connection
         try:
@@ -571,6 +572,20 @@ class RoboVacEntity(StateVacuumEntity):
                 f"{SIGNAL_MAP_UPDATE}_{self.unique_id}",
                 self.tuyastatus,
             )
+
+        # Fire a dedicated signal when the vacuum transitions to DOCKED so the
+        # camera entity can trigger a cloud map fetch for the completed clean.
+        current_activity = self.activity
+        if (
+            self.hass is not None
+            and current_activity == VacuumActivity.DOCKED
+            and self._last_activity != VacuumActivity.DOCKED
+        ):
+            async_dispatcher_send(
+                self.hass,
+                f"{SIGNAL_VACUUM_DOCKED}_{self.unique_id}",
+            )
+        self._last_activity = current_activity
 
     def _get_dps_code(self, code_name: str) -> str:
         """Get the DPS code for a specific function.

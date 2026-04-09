@@ -75,6 +75,27 @@ class EufyLogon:
         except requests.exceptions.ConnectionError:
             return None
 
+    def get_user_center_info(self, token: str) -> Optional[requests.Response]:
+        """Get user-center credentials needed for aiot-clean-api authentication.
+
+        The returned response contains ``user_center_id`` and
+        ``user_center_token``, which are used as ``gtoken`` (MD5 of
+        user_center_id) and ``x-auth-token`` when calling
+        ``aiot-clean-api-pr.eufylife.com``.
+
+        Args:
+            token: The access token from :meth:`get_user_info`.
+
+        Returns:
+            Response object or None if connection error occurs.
+        """
+        url = "https://api.eufylife.com/v1/user/user_center_info"
+        headers = {**eufyheaders, "token": token}
+        try:
+            return requests.get(url, headers=headers)
+        except requests.exceptions.ConnectionError:
+            return None
+
     def get_device_info(
         self, url: str, userid: str, token: str
     ) -> Optional[requests.Response]:
