@@ -9,10 +9,11 @@ Authentication chain
    → ``access_token``
 2. GET  ``https://api.eufylife.com/v1/user/user_center_info``
    with ``token: access_token`` header
-   → ``user_center_token``, ``gtoken``
+   → ``user_center_token``, ``user_center_id``
+   ``gtoken = MD5(user_center_id)`` (computed locally)
 3. Subsequent calls to ``aiot-clean-api-pr.eufylife.com`` use:
-   ``x-auth-token: user_center_token``, ``gtoken: gtoken``,
-   ``app-name: eufy_home``, ``model-type: PHONE``
+   ``x-auth-token: user_center_token``, ``gtoken: MD5(user_center_id)``,
+   ``app-name: eufy_home``, ``model-type: PHONE``, ``os-version: Android``
 
 Map retrieval strategy
 ----------------------
@@ -28,7 +29,9 @@ responsibility.
 """
 from __future__ import annotations
 
+import hashlib
 import logging
+import os
 from typing import Any, Optional
 
 import aiohttp
@@ -40,7 +43,7 @@ _USER_CENTER_URL = "https://api.eufylife.com/v1/user/user_center_info"
 _AIOT_BASE = "https://aiot-clean-api-pr.eufylife.com"
 
 _LOGIN_HEADERS = {
-    "User-Agent": "EufyHome-Android-2.4.0",
+    "User-Agent": "EufyHome-Android-3.1.3-753",
     "timezone": "Europe/London",
     "category": "Home",
     "token": "",
@@ -56,9 +59,10 @@ _LOGIN_HEADERS = {
 # Payload for all: {"device_sn": <device_id>}
 _MAP_ENDPOINTS = [
     "/app/devicemanage/get_map_data",
+    "/app/devicemanage/get_clean_record",
+    "/app/devicemanage/get_clean_history",
     "/app/map/get_clean_map",
     "/app/clean/get_clean_record_list",
-    "/app/devicemanage/get_clean_record",
     "/app/map/get_map_list",
 ]
 
@@ -92,6 +96,8 @@ class EufyCloudMapFetcher:
 
         self._user_center_token: str | None = None
         self._gtoken: str | None = None
+        # Random 32-hex openudid generated once per instance (like a device ID)
+        self._openudid: str = os.urandom(16).hex()
 
     # ------------------------------------------------------------------
     # Session management
@@ -180,11 +186,17 @@ class EufyCloudMapFetcher:
             or payload.get("userCenterToken")
             or ""
         )
-        self._gtoken = (
-            payload.get("gtoken")
-            or payload.get("gt")
+
+        # gtoken = MD5(user_center_id) – computed locally, not fetched.
+        user_center_id: str = (
+            payload.get("user_center_id")
+            or payload.get("userCenterId")
             or ""
         )
+        if user_center_id:
+            self._gtoken = hashlib.md5(user_center_id.encode()).hexdigest()
+        else:
+            self._gtoken = ""
 
         if not self._user_center_token:
             _LOGGER.warning(
@@ -194,7 +206,10 @@ class EufyCloudMapFetcher:
             )
             return False
 
-        _LOGGER.debug("Eufy cloud authentication successful")
+        _LOGGER.debug(
+            "Eufy cloud authentication successful (gtoken computed from user_center_id=%s)",
+            bool(user_center_id),
+        )
         return True
 
     # ------------------------------------------------------------------
@@ -203,6 +218,12 @@ class EufyCloudMapFetcher:
 
     def _aiot_headers(self) -> dict[str, str]:
         return {
+            "user-agent": "EufyHome-Android-3.1.3-753",
+            "timezone": "Europe/London",
+            "openudid": self._openudid,
+            "language": "en",
+            "country": "US",
+            "os-version": "Android",
             "model-type": "PHONE",
             "app-name": "eufy_home",
             "x-auth-token": self._user_center_token or "",
