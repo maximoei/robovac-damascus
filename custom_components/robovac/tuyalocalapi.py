@@ -219,7 +219,7 @@ class TuyaCipher:
             aad = b""
         # AESGCM.decrypt expects ciphertext + tag concatenated
         ct_with_tag = ciphertext + tag
-        return self._aesgcm.decrypt(iv, ct_with_tag, aad)
+        return bytes(self._aesgcm.decrypt(iv, ct_with_tag, aad))
 
     def hmac_sha256(self, data: bytes) -> bytes:
         """Calculate HMAC-SHA256 for protocol 3.4.
@@ -232,7 +232,7 @@ class TuyaCipher:
         """
         h = crypto_hmac.HMAC(self.key_bytes, SHA256(), backend=openssl_backend)
         h.update(data)
-        return h.finalize()
+        return bytes(h.finalize())
 
     def verify_hmac(self, data: bytes, expected_hmac: bytes) -> bool:
         """Verify HMAC-SHA256 for protocol 3.4.
@@ -318,7 +318,7 @@ class TuyaCipher:
         except ValueError:
             # PKCS7 unpadding failed - likely wrong key or corrupted data
             # Return raw decrypted data and let caller handle the error
-            return decrypted_data
+            return bytes(decrypted_data)
 
     def encrypt(self, command: int, data: bytes) -> bytes:
         """Encrypt the data.
