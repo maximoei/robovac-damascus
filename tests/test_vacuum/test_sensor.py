@@ -1050,7 +1050,6 @@ async def test_last_clean_record_sensor_successful_update(mock_vacuum_data: Any)
 # ============================================================================
 
 
-
 @pytest.mark.asyncio
 async def test_battery_sensor_string_value() -> None:
     """Test battery sensor handles string battery values."""
