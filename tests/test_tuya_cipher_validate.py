@@ -8,7 +8,9 @@ def test_get_prefix_size_and_validate_v31() -> None:
 
     # Valid prefix
     valid_data = b"3.1" + b"a" * 16 + b"payload"
-    assert cipher.get_prefix_size_and_validate(0, valid_data) == 0  # Invalid hash will return 0
+    assert (
+        cipher.get_prefix_size_and_validate(0, valid_data) == 0
+    )  # Invalid hash will return 0
 
     # We just want to test coverage for line 263-274
     # To hit line 268 (return 19), we need a valid hash
@@ -27,7 +29,9 @@ def test_get_prefix_size_and_validate_v33() -> None:
     header = struct.pack(">IIIH", 0, 1, 0, 0)
     valid_data = b"3.3" + header + b"payload"
     assert cipher.get_prefix_size_and_validate(Message.SET_COMMAND, valid_data) == 15
-    assert cipher.get_prefix_size_and_validate(Message.GRATUITOUS_UPDATE, valid_data) == 15
+    assert (
+        cipher.get_prefix_size_and_validate(Message.GRATUITOUS_UPDATE, valid_data) == 15
+    )
     assert cipher.get_prefix_size_and_validate(Message.GET_COMMAND, valid_data) == 0
 
 

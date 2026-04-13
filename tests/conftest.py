@@ -197,13 +197,16 @@ def mock_l60() -> MagicMock:
         "FAN_SPEED": "154",
         "LOCATE": "153",
         "BATTERY_LEVEL": "172",
-        "ERROR_CODE": "169"
+        "ERROR_CODE": "169",
     }
 
     # Set up L60-specific command value mapping
     def l60_command_value_side_effect(command_name: Any, value: str) -> str:
         from custom_components.robovac.robovac import RobovacCommand
-        if (command_name == RobovacCommand.MODE or command_name == "MODE") and value == "auto":
+
+        if (
+            command_name == RobovacCommand.MODE or command_name == "MODE"
+        ) and value == "auto":
             return "BBoCCAE="
         return value
 
@@ -274,6 +277,7 @@ def mock_t2080() -> MagicMock:
 
     # Mock activity mapping for T2080
     from homeassistant.components.vacuum import VacuumActivity
+
     mock.getRoboVacActivityMapping.return_value = {
         "Paused": VacuumActivity.PAUSED,
         "Auto Cleaning": VacuumActivity.CLEANING,
@@ -295,6 +299,7 @@ def mock_t2080() -> MagicMock:
     # Mock human readable value conversion
     def mock_get_human_readable_value(command: Any, value: str) -> str:
         from custom_components.robovac.vacuums.base import RobovacCommand
+
         status_mapping = {
             "CAoAEAUyAggB": "Paused",
             "CAoCCAEQBTIA": "Room Cleaning",

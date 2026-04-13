@@ -1,4 +1,5 @@
 """eufy Clean C20 Hybrid SES (T2280)"""
+
 from homeassistant.components.vacuum import VacuumEntityFeature
 from .base import RoboVacEntityFeature, RobovacCommand, RobovacModelDetails
 
@@ -15,8 +16,7 @@ class T2280(RobovacModelDetails):
         | VacuumEntityFeature.STOP
     )
     robovac_features = (
-        RoboVacEntityFeature.DO_NOT_DISTURB
-        | RoboVacEntityFeature.BOOST_IQ
+        RoboVacEntityFeature.DO_NOT_DISTURB | RoboVacEntityFeature.BOOST_IQ
     )
     commands = {
         RobovacCommand.MODE: {
@@ -36,19 +36,19 @@ class T2280(RobovacModelDetails):
             "code": 153,
             "values": {
                 "return_home": "AggB",
-            }
+            },
         },
         RobovacCommand.FAN_SPEED: {
             "code": 154,
             "values": {
                 "fan_speed": "AgkBCgIKAQoDCgEKBAoB",
-            }
+            },
         },
         RobovacCommand.LOCATE: {
             "code": 153,
             "values": {
                 "locate": "AggC",
-            }
+            },
         },
         RobovacCommand.BATTERY: {
             "code": 172,

@@ -11,7 +11,11 @@ class TestModelValidatorCLI:
 
     def run_cli(self, *args: Any) -> subprocess.CompletedProcess[str]:
         """Helper function to run the CLI tool as a subprocess."""
-        command = [sys.executable, "-m", "custom_components.robovac.model_validator_cli"] + list(args)
+        command = [
+            sys.executable,
+            "-m",
+            "custom_components.robovac.model_validator_cli",
+        ] + list(args)
         result = subprocess.run(command, capture_output=True, text=True, check=False)
         return result
 

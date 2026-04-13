@@ -9,7 +9,9 @@ from custom_components.robovac.robovac import RoboVac, RobovacCommand
 @pytest.fixture
 def mock_robovac():
     """Create a mock RoboVac instance for testing."""
-    with patch("custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None):
+    with patch(
+        "custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None
+    ):
         robovac = RoboVac(
             model_code="T2250",  # G30
             device_id="test_id",
@@ -25,7 +27,7 @@ def mock_robovac():
                     "auto": "auto",
                     "small_room": "SmallRoom",
                     "edge": "Edge",
-                    "spot": "Spot"
+                    "spot": "Spot",
                 },
             },
             RobovacCommand.DIRECTION: {
@@ -65,7 +67,10 @@ def test_get_robovac_command_value_no_values(mock_robovac):
 def test_get_robovac_command_value_invalid_command(mock_robovac):
     """Test getRoboVacCommandValue with invalid command."""
     # Test with invalid command name (not in the commands dict)
-    assert mock_robovac.getRoboVacCommandValue("INVALID_COMMAND", "some_value") == "some_value"
+    assert (
+        mock_robovac.getRoboVacCommandValue("INVALID_COMMAND", "some_value")
+        == "some_value"
+    )
 
     # Test with None value
     assert mock_robovac.getRoboVacCommandValue(RobovacCommand.MODE, None) is None

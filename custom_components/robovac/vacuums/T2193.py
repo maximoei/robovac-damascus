@@ -1,4 +1,5 @@
 """RoboVac LR30 Hybrid (T2193)"""
+
 from homeassistant.components.vacuum import VacuumEntityFeature
 from .base import RoboVacEntityFeature, RobovacCommand, RobovacModelDetails
 

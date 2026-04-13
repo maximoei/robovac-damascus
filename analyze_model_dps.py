@@ -40,7 +40,9 @@ def analyze_model_dps_codes() -> None:
     # Check each model
     for model_code in sorted(ROBOVAC_MODELS):
         # Initialize the vacuum with mock parameters
-        with patch("custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None):
+        with patch(
+            "custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None
+        ):
             vacuum = RoboVac(
                 model_code=model_code,
                 device_id="test_id",
@@ -54,13 +56,16 @@ def analyze_model_dps_codes() -> None:
             # Check if any codes differ from defaults
             non_default_codes = {}
             for code_name, code_value in dps_codes.items():
-                if code_name in default_codes and code_value != default_codes[code_name]:
+                if (
+                    code_name in default_codes
+                    and code_value != default_codes[code_name]
+                ):
                     non_default_codes[code_name] = code_value
 
             # Store result for this model
             model_dps_analysis[model_code] = {
                 "has_non_default_codes": bool(non_default_codes),
-                "non_default_codes": non_default_codes
+                "non_default_codes": non_default_codes,
             }
 
     # Print model analysis

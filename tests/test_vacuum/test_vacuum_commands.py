@@ -69,7 +69,9 @@ async def test_async_start(mock_robovac, mock_vacuum_data) -> None:
 
 
 @pytest.mark.asyncio
-async def test_async_start_model_specific(mock_robovac, mock_vacuum_data: Any, mock_l60, mock_l60_data) -> None:
+async def test_async_start_model_specific(
+    mock_robovac, mock_vacuum_data: Any, mock_l60, mock_l60_data
+) -> None:
     """Test that async_start uses the correct code for different models."""
     # Test with standard model (should use code "5")
     with patch("custom_components.robovac.vacuum.RoboVac", return_value=mock_robovac):
@@ -98,7 +100,9 @@ async def test_async_start_sends_start_pause_for_boolean_models(
     GH-303: Models like T2128 use boolean START_PAUSE (True=start, False=pause).
     async_start must send both MODE and START_PAUSE for these models.
     """
-    with patch("custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None):
+    with patch(
+        "custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None
+    ):
         robovac = RoboVac(
             model_code="T2128",
             device_id="test_id",
@@ -122,7 +126,9 @@ async def test_async_pause_sends_boolean_for_toggle_models(
 
     GH-303: Models like T2128 need False (not string 'pause') sent to DPS code 2.
     """
-    with patch("custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None):
+    with patch(
+        "custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None
+    ):
         robovac = RoboVac(
             model_code="T2128",
             device_id="test_id",
@@ -191,12 +197,24 @@ async def test_async_set_fan_speed(mock_robovac, mock_vacuum_data) -> None:
 
         # Test cases for fan speed conversion
         test_cases = [
-            ("Turbo", "Turbo"),                # Input normalized to "turbo" -> maps to "Turbo"
-            ("Max", "Max"),                    # Input normalized to "max" -> maps to "Max"
-            ("Standard", "Standard"),          # Input normalized to "standard" -> maps to "Standard"
-            ("Quiet", "quiet"),                # Input normalized to "quiet" -> not in mapping, returns input
-            ("Boost_IQ", "Boost IQ"),          # Input normalized to "boost_iq" -> maps to "Boost IQ"
-            ("No_suction", "No Suction"),  # Input normalized to "no_suction" -> maps to "No Suction"
+            ("Turbo", "Turbo"),  # Input normalized to "turbo" -> maps to "Turbo"
+            ("Max", "Max"),  # Input normalized to "max" -> maps to "Max"
+            (
+                "Standard",
+                "Standard",
+            ),  # Input normalized to "standard" -> maps to "Standard"
+            (
+                "Quiet",
+                "quiet",
+            ),  # Input normalized to "quiet" -> not in mapping, returns input
+            (
+                "Boost_IQ",
+                "Boost IQ",
+            ),  # Input normalized to "boost_iq" -> maps to "Boost IQ"
+            (
+                "No_suction",
+                "No Suction",
+            ),  # Input normalized to "no_suction" -> maps to "No Suction"
         ]
 
         for input_speed, expected_output in test_cases:

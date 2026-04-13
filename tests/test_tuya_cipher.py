@@ -184,7 +184,10 @@ class TestMessageFromBytes:
     """Test Message.from_bytes() for different protocol versions."""
 
     def _create_v33_message(
-        self, cipher: TuyaCipher, command: int = 1, payload: bytes = b'{"dps":{"1":true}}'
+        self,
+        cipher: TuyaCipher,
+        command: int = 1,
+        payload: bytes = b'{"dps":{"1":true}}',
     ) -> bytes:
         """Helper to create a valid v3.3 message."""
         encrypted_payload = cipher.encrypt(command, payload)
@@ -205,7 +208,10 @@ class TestMessageFromBytes:
         return header + encrypted_payload + footer
 
     def _create_v34_message(
-        self, cipher: TuyaCipher, command: int = 1, payload: bytes = b'{"dps":{"1":true}}'
+        self,
+        cipher: TuyaCipher,
+        command: int = 1,
+        payload: bytes = b'{"dps":{"1":true}}',
     ) -> bytes:
         """Helper to create a valid v3.4 message."""
         encrypted_payload = cipher.encrypt(command, payload)

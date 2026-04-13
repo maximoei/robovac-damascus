@@ -3,9 +3,7 @@
 from typing import Any, Dict, Optional
 
 
-def case_insensitive_lookup(
-    lookup_dict: Dict[str, Any], key: str
-) -> Optional[Any]:
+def case_insensitive_lookup(lookup_dict: Dict[str, Any], key: str) -> Optional[Any]:
     """
     Perform a case-insensitive lookup in a dictionary.
 

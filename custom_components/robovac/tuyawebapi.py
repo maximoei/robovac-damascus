@@ -24,6 +24,7 @@ from typing import Any, Dict, Optional
 from cryptography.hazmat.backends.openssl import backend as openssl_backend
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 import requests
+
 # Local imports
 from .countries import get_phone_code_by_region
 
@@ -78,7 +79,9 @@ TUYA_PASSWORD_INNER_CIPHER = Cipher(
     backend=openssl_backend,
 )
 
-DEFAULT_TUYA_HEADERS: Dict[str, str] = {"User-Agent": "TY-UA=APP/Android/2.4.0/SDK/null"}
+DEFAULT_TUYA_HEADERS: Dict[str, str] = {
+    "User-Agent": "TY-UA=APP/Android/2.4.0/SDK/null"
+}
 
 SIGNATURE_RELEVANT_PARAMETERS = {
     "a",
@@ -141,7 +144,9 @@ class TuyaAPISession:
     session: requests.Session
     default_query_params: Dict[str, str]
 
-    def __init__(self, username: str, region: str, timezone: str, phone_code: str) -> None:
+    def __init__(
+        self, username: str, region: str, timezone: str, phone_code: str
+    ) -> None:
         """Initialize the TuyaAPISession.
 
         Args:
@@ -178,7 +183,9 @@ class TuyaAPISession:
         # comprehension with secrets.choice() to avoid O(N) Python loop overhead.
         # 24 random bytes produces exactly 32 base64 characters.
         # We replace the URL-safe characters '-' and '_' to strictly match alphanumeric.
-        return device_id_dependent_part + secrets.token_urlsafe(24).replace("-", "A").replace("_", "B")
+        return device_id_dependent_part + secrets.token_urlsafe(24).replace(
+            "-", "A"
+        ).replace("_", "B")
 
     @staticmethod
     def get_signature(query_params: dict, encoded_post_data: str) -> str:
@@ -201,9 +208,7 @@ class TuyaAPISession:
         mapped_pairs = map(
             # postData is pre-emptively hashed (for performance reasons?),
             # everything else is included as-is
-            lambda p: p[0] + "=" + (
-                shuffled_md5(p[1]) if p[0] == "postData" else p[1]
-            ),
+            lambda p: p[0] + "=" + (shuffled_md5(p[1]) if p[0] == "postData" else p[1]),
             filtered_pairs,
         )
         message = "||".join(mapped_pairs)
@@ -245,7 +250,9 @@ class TuyaAPISession:
         """
         if not self.session_id and _requires_session:
             if not self.username or not self.country_code:
-                raise ValueError("Username and country code must be set for session-based requests")
+                raise ValueError(
+                    "Username and country code must be set for session-based requests"
+                )
             self.acquire_session()
 
         current_time = time.time()
@@ -322,7 +329,9 @@ class TuyaAPISession:
         encrypted_uid += encryptor.finalize()
         return md5(encrypted_uid.hex().upper().encode("utf-8")).hexdigest()
 
-    def request_session(self, username: str, password: str, country_code: str) -> Dict[str, Any]:
+    def request_session(
+        self, username: str, password: str, country_code: str
+    ) -> Dict[str, Any]:
         """Request a session from the Tuya API.
 
         Args:

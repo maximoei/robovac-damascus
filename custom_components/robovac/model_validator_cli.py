@@ -27,12 +27,8 @@ def main() -> int:
         formatter_class=argparse.RawTextHelpFormatter,
         epilog="Example:\n  python -m custom_components.robovac.model_validator_cli T2278",
     )
-    parser.add_argument(
-        "model", nargs="?", help="Model code to validate (e.g., T2278)"
-    )
-    parser.add_argument(
-        "--list", action="store_true", help="List all supported models"
-    )
+    parser.add_argument("model", nargs="?", help="Model code to validate (e.g., T2278)")
+    parser.add_argument("--list", action="store_true", help="List all supported models")
 
     args = parser.parse_args()
 

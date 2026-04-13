@@ -12,7 +12,9 @@ from custom_components.robovac.vacuums.base import RobovacCommand
 @pytest.fixture
 def mock_t2278_robovac() -> RoboVac:
     """Create a mock T2278 RoboVac instance for testing."""
-    with patch("custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None):
+    with patch(
+        "custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None
+    ):
         robovac = RoboVac(
             model_code="T2278",
             device_id="test_id",
@@ -43,16 +45,37 @@ class TestT2278ModeCommand:
 
     def test_mode_command_values(self, mock_t2278_robovac: RoboVac) -> None:
         """Test T2278 MODE command value mappings."""
-        assert mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "standby") == "AA=="
-        assert mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "pause") == "AggN"
-        assert mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "stop") == "AggG"
-        assert mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "return") == "AggG"
-        assert mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "auto") == "BBoCCAE="
-        assert mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "nosweep") == "AggO"
+        assert (
+            mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "standby")
+            == "AA=="
+        )
+        assert (
+            mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "pause")
+            == "AggN"
+        )
+        assert (
+            mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "stop")
+            == "AggG"
+        )
+        assert (
+            mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "return")
+            == "AggG"
+        )
+        assert (
+            mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "auto")
+            == "BBoCCAE="
+        )
+        assert (
+            mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "nosweep")
+            == "AggO"
+        )
 
     def test_mode_unknown_returns_as_is(self, mock_t2278_robovac: RoboVac) -> None:
         """Test unknown MODE value returns as-is."""
-        assert mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "unknown") == "unknown"
+        assert (
+            mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "unknown")
+            == "unknown"
+        )
 
 
 class TestT2278StatusCommand:
@@ -60,26 +83,96 @@ class TestT2278StatusCommand:
 
     def test_status_human_readable_values(self, mock_t2278_robovac: RoboVac) -> None:
         """Test T2278 STATUS command returns human-readable values."""
-        assert mock_t2278_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "AA==") == "Standby"
-        assert mock_t2278_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "AggB") == "Paused"
-        assert mock_t2278_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "AhAB") == "Sleeping"
-        assert mock_t2278_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "BBADGgA=") == "Charging"
-        assert mock_t2278_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "BBAHQgA=") == "Heading Home"
-        assert mock_t2278_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "BgoAEAUyAA==") == "Cleaning"
-        assert mock_t2278_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "BgoAEAVSAA==") == "Positioning"
-        assert mock_t2278_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "BhADGgIIAQ==") == "Completed"
+        assert (
+            mock_t2278_robovac.getRoboVacHumanReadableValue(
+                RobovacCommand.STATUS, "AA=="
+            )
+            == "Standby"
+        )
+        assert (
+            mock_t2278_robovac.getRoboVacHumanReadableValue(
+                RobovacCommand.STATUS, "AggB"
+            )
+            == "Paused"
+        )
+        assert (
+            mock_t2278_robovac.getRoboVacHumanReadableValue(
+                RobovacCommand.STATUS, "AhAB"
+            )
+            == "Sleeping"
+        )
+        assert (
+            mock_t2278_robovac.getRoboVacHumanReadableValue(
+                RobovacCommand.STATUS, "BBADGgA="
+            )
+            == "Charging"
+        )
+        assert (
+            mock_t2278_robovac.getRoboVacHumanReadableValue(
+                RobovacCommand.STATUS, "BBAHQgA="
+            )
+            == "Heading Home"
+        )
+        assert (
+            mock_t2278_robovac.getRoboVacHumanReadableValue(
+                RobovacCommand.STATUS, "BgoAEAUyAA=="
+            )
+            == "Cleaning"
+        )
+        assert (
+            mock_t2278_robovac.getRoboVacHumanReadableValue(
+                RobovacCommand.STATUS, "BgoAEAVSAA=="
+            )
+            == "Positioning"
+        )
+        assert (
+            mock_t2278_robovac.getRoboVacHumanReadableValue(
+                RobovacCommand.STATUS, "BhADGgIIAQ=="
+            )
+            == "Completed"
+        )
 
     def test_status_room_cleaning_values(self, mock_t2278_robovac: RoboVac) -> None:
         """Test T2278 room cleaning status values."""
-        assert mock_t2278_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "CAoCCAEQBTIA") == "Room Cleaning"
-        assert mock_t2278_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "CAoCCAEQBVIA") == "Room Positioning"
-        assert mock_t2278_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "CgoCCAEQBTICCAE=") == "Room Paused"
+        assert (
+            mock_t2278_robovac.getRoboVacHumanReadableValue(
+                RobovacCommand.STATUS, "CAoCCAEQBTIA"
+            )
+            == "Room Cleaning"
+        )
+        assert (
+            mock_t2278_robovac.getRoboVacHumanReadableValue(
+                RobovacCommand.STATUS, "CAoCCAEQBVIA"
+            )
+            == "Room Positioning"
+        )
+        assert (
+            mock_t2278_robovac.getRoboVacHumanReadableValue(
+                RobovacCommand.STATUS, "CgoCCAEQBTICCAE="
+            )
+            == "Room Paused"
+        )
 
     def test_status_zone_cleaning_values(self, mock_t2278_robovac: RoboVac) -> None:
         """Test T2278 zone cleaning status values."""
-        assert mock_t2278_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "CAoCCAIQBTIA") == "Zone Cleaning"
-        assert mock_t2278_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "CAoCCAIQBVIA") == "Zone Positioning"
-        assert mock_t2278_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "CgoCCAIQBTICCAE=") == "Zone Paused"
+        assert (
+            mock_t2278_robovac.getRoboVacHumanReadableValue(
+                RobovacCommand.STATUS, "CAoCCAIQBTIA"
+            )
+            == "Zone Cleaning"
+        )
+        assert (
+            mock_t2278_robovac.getRoboVacHumanReadableValue(
+                RobovacCommand.STATUS, "CAoCCAIQBVIA"
+            )
+            == "Zone Positioning"
+        )
+        assert (
+            mock_t2278_robovac.getRoboVacHumanReadableValue(
+                RobovacCommand.STATUS, "CgoCCAIQBTICCAE="
+            )
+            == "Zone Paused"
+        )
 
 
 class TestT2278FanSpeedCommand:
@@ -87,14 +180,33 @@ class TestT2278FanSpeedCommand:
 
     def test_fan_speed_command_values(self, mock_t2278_robovac: RoboVac) -> None:
         """Test T2278 FAN_SPEED value mapping."""
-        assert mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "quiet") == "Quiet"
-        assert mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "standard") == "Standard"
-        assert mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "turbo") == "Turbo"
-        assert mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "max") == "Max"
+        assert (
+            mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "quiet")
+            == "Quiet"
+        )
+        assert (
+            mock_t2278_robovac.getRoboVacCommandValue(
+                RobovacCommand.FAN_SPEED, "standard"
+            )
+            == "Standard"
+        )
+        assert (
+            mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "turbo")
+            == "Turbo"
+        )
+        assert (
+            mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "max")
+            == "Max"
+        )
 
     def test_fan_speed_unknown_returns_as_is(self, mock_t2278_robovac: RoboVac) -> None:
         """Test unknown FAN_SPEED value returns as-is."""
-        assert mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "unknown") == "unknown"
+        assert (
+            mock_t2278_robovac.getRoboVacCommandValue(
+                RobovacCommand.FAN_SPEED, "unknown"
+            )
+            == "unknown"
+        )
 
 
 class TestT2278LocateCommand:
@@ -102,11 +214,17 @@ class TestT2278LocateCommand:
 
     def test_locate_command_values(self, mock_t2278_robovac: RoboVac) -> None:
         """Test T2278 LOCATE value mapping."""
-        assert mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.LOCATE, "locate") == "true"
+        assert (
+            mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.LOCATE, "locate")
+            == "true"
+        )
 
     def test_locate_unknown_returns_as_is(self, mock_t2278_robovac: RoboVac) -> None:
         """Test unknown LOCATE value returns as-is."""
-        assert mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.LOCATE, "unknown") == "unknown"
+        assert (
+            mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.LOCATE, "unknown")
+            == "unknown"
+        )
 
 
 class TestT2278ReturnHomeCommand:
@@ -114,11 +232,23 @@ class TestT2278ReturnHomeCommand:
 
     def test_return_home_command_values(self, mock_t2278_robovac: RoboVac) -> None:
         """Test T2278 RETURN_HOME value mapping."""
-        assert mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.RETURN_HOME, "return") == "AggG"
+        assert (
+            mock_t2278_robovac.getRoboVacCommandValue(
+                RobovacCommand.RETURN_HOME, "return"
+            )
+            == "AggG"
+        )
 
-    def test_return_home_unknown_returns_as_is(self, mock_t2278_robovac: RoboVac) -> None:
+    def test_return_home_unknown_returns_as_is(
+        self, mock_t2278_robovac: RoboVac
+    ) -> None:
         """Test unknown RETURN_HOME value returns as-is."""
-        assert mock_t2278_robovac.getRoboVacCommandValue(RobovacCommand.RETURN_HOME, "unknown") == "unknown"
+        assert (
+            mock_t2278_robovac.getRoboVacCommandValue(
+                RobovacCommand.RETURN_HOME, "unknown"
+            )
+            == "unknown"
+        )
 
 
 class TestT2278CommandCodes:
@@ -145,7 +275,9 @@ class TestT2278ActivityMapping:
         assert hasattr(mock_t2278_robovac.model_details, "activity_mapping")
         assert mock_t2278_robovac.model_details.activity_mapping is not None
 
-    def test_activity_mapping_cleaning_states(self, mock_t2278_robovac: RoboVac) -> None:
+    def test_activity_mapping_cleaning_states(
+        self, mock_t2278_robovac: RoboVac
+    ) -> None:
         """Test cleaning states map to VacuumActivity.CLEANING."""
         mapping = mock_t2278_robovac.model_details.activity_mapping
         assert mapping["Cleaning"] == VacuumActivity.CLEANING
@@ -168,7 +300,9 @@ class TestT2278ActivityMapping:
         assert mapping["Room Paused"] == VacuumActivity.PAUSED
         assert mapping["Zone Paused"] == VacuumActivity.PAUSED
 
-    def test_activity_mapping_returning_state(self, mock_t2278_robovac: RoboVac) -> None:
+    def test_activity_mapping_returning_state(
+        self, mock_t2278_robovac: RoboVac
+    ) -> None:
         """Test returning state maps to VacuumActivity.RETURNING."""
         mapping = mock_t2278_robovac.model_details.activity_mapping
         assert mapping["Heading Home"] == VacuumActivity.RETURNING

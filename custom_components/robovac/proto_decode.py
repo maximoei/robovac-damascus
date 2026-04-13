@@ -19,7 +19,6 @@ Protobuf binary format:
 import base64
 from typing import Any
 
-
 # T2277 error/warning codes (DPS 177 field_3 warn / field_10 new_code)
 # Empirically observed on T2277 hardware; codes are in the 2100–8100 range.
 T2277_ERROR_CODES = {
@@ -106,7 +105,7 @@ def _parse_proto(data: bytes) -> dict[int, Any]:
 
         elif wire_type == 2:  # length-delimited
             length, pos = _parse_varint(data, pos)
-            raw_value: bytes = data[pos: pos + length]
+            raw_value: bytes = data[pos : pos + length]
             pos += length
             if field_num in fields:
                 # Repeated length-delimited field → accumulate as list
@@ -406,13 +405,13 @@ def decode_work_status_v2(raw_b64: str) -> str:
     # Infer overall state from sub-state presence when explicit state absent
     if state is None:
         if cleaning_fields or gowash_fields:
-            state = 5   # CLEANING
+            state = 5  # CLEANING
         elif gohome_fields:
-            state = 7   # GO_HOME
+            state = 7  # GO_HOME
         elif charging_fields:
-            state = 3   # CHARGING
+            state = 3  # CHARGING
         else:
-            state = 0   # STANDBY
+            state = 0  # STANDBY
 
     if state == 0:
         return "Standby"
@@ -420,7 +419,7 @@ def decode_work_status_v2(raw_b64: str) -> str:
         return "Sleeping"
     if state == 2:
         return "error"
-    if state == 3:   # CHARGING
+    if state == 3:  # CHARGING
         if charging_state == 1:
             return "completed"
         if breakpoint_fields:
@@ -428,20 +427,20 @@ def decode_work_status_v2(raw_b64: str) -> str:
         return "Charging"
     if state == 4:
         return "fast_mapping"
-    if state == 5:   # CLEANING
+    if state == 5:  # CLEANING
         if relocating_fields:
             if mode_val == 1:
                 return "room_positioning"
             if mode_val == 2:
                 return "spot_positioning"
             return "positioning"
-        if cleaning_run_state == 1:   # PAUSED
+        if cleaning_run_state == 1:  # PAUSED
             if mode_val == 1:
                 return "room_pause"
             if mode_val == 2:
                 return "spot_pause"
             return "Paused"
-        if gowash_run_state == 1:     # GoWash PAUSED
+        if gowash_run_state == 1:  # GoWash PAUSED
             return "Paused"
         if gowash_fields:
             return "going_to_wash"
@@ -454,7 +453,7 @@ def decode_work_status_v2(raw_b64: str) -> str:
         return "auto"
     if state == 6:
         return "start_manual"
-    if state == 7:   # GO_HOME
+    if state == 7:  # GO_HOME
         if breakpoint_fields:
             return "going_to_recharge"
         return "going_to_charge"
@@ -503,16 +502,24 @@ def decode_clean_param_response(raw_b64: str) -> dict[str, Any]:
         result: dict[str, Any] = {}
         if 1 in f:
             v = _enum_val(f[1])
-            result["clean_type"] = CLEAN_TYPE_NAMES[v] if v < len(CLEAN_TYPE_NAMES) else f"clean_type_{v}"
+            result["clean_type"] = (
+                CLEAN_TYPE_NAMES[v] if v < len(CLEAN_TYPE_NAMES) else f"clean_type_{v}"
+            )
         if 2 in f:
             v = _enum_val(f[2])
-            result["clean_carpet"] = CARPET_NAMES[v] if v < len(CARPET_NAMES) else f"carpet_{v}"
+            result["clean_carpet"] = (
+                CARPET_NAMES[v] if v < len(CARPET_NAMES) else f"carpet_{v}"
+            )
         if 3 in f:
             v = _enum_val(f[3])
-            result["clean_extent"] = EXTENT_NAMES[v] if v < len(EXTENT_NAMES) else f"extent_{v}"
+            result["clean_extent"] = (
+                EXTENT_NAMES[v] if v < len(EXTENT_NAMES) else f"extent_{v}"
+            )
         if 4 in f:
             v = _enum_val(f[4])
-            result["mop_level"] = MOP_LEVEL_NAMES[v] if v < len(MOP_LEVEL_NAMES) else f"mop_{v}"
+            result["mop_level"] = (
+                MOP_LEVEL_NAMES[v] if v < len(MOP_LEVEL_NAMES) else f"mop_{v}"
+            )
         if 6 in f:
             v = _enum_val(f[6])
             result["fan"] = FAN_NAMES[v] if v < len(FAN_NAMES) else f"fan_{v}"
@@ -717,7 +724,13 @@ def decode_analysis_response(raw_b64: str) -> dict[str, Any]:
           field_12 uint32  room_count
           field_13 RollBrush roll_brush
     """
-    MODES = ["auto_clean", "select_rooms_clean", "select_zones_clean", "spot_clean", "fast_mapping"]
+    MODES = [
+        "auto_clean",
+        "select_rooms_clean",
+        "select_zones_clean",
+        "spot_clean",
+        "fast_mapping",
+    ]
     TYPES = ["sweep_only", "mop_only", "sweep_and_mop"]
     FAIL_CODES = ["unknown", "robot_fault", "robot_alert", "manual_break"]
 
@@ -742,13 +755,19 @@ def decode_analysis_response(raw_b64: str) -> dict[str, Any]:
         result["success"] = bool(cr[2])
     if 3 in cr:
         v = cr[3]
-        result["fail_code"] = FAIL_CODES[v] if isinstance(v, int) and v < len(FAIL_CODES) else str(v)
+        result["fail_code"] = (
+            FAIL_CODES[v] if isinstance(v, int) and v < len(FAIL_CODES) else str(v)
+        )
     if 4 in cr:
         v = cr[4]
-        result["mode"] = MODES[v] if isinstance(v, int) and v < len(MODES) else f"mode_{v}"
+        result["mode"] = (
+            MODES[v] if isinstance(v, int) and v < len(MODES) else f"mode_{v}"
+        )
     if 5 in cr:
         v = cr[5]
-        result["clean_type"] = TYPES[v] if isinstance(v, int) and v < len(TYPES) else f"type_{v}"
+        result["clean_type"] = (
+            TYPES[v] if isinstance(v, int) and v < len(TYPES) else f"type_{v}"
+        )
     if 6 in cr:
         result["start_time"] = cr[6]
     if 7 in cr:

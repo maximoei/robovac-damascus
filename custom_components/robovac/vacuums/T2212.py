@@ -1,4 +1,5 @@
 """G50 (T2212)"""
+
 from homeassistant.components.vacuum import VacuumEntityFeature
 from .base import RoboVacEntityFeature, RobovacCommand, RobovacModelDetails
 

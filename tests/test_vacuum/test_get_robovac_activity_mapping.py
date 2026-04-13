@@ -10,7 +10,9 @@ from custom_components.robovac.robovac import RoboVac
 @pytest.fixture
 def mock_t2080_robovac():
     """Create a mock T2080 RoboVac instance for testing."""
-    with patch("custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None):
+    with patch(
+        "custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None
+    ):
         robovac = RoboVac(
             model_code="T2080",
             device_id="test_id",
@@ -42,7 +44,9 @@ def mock_t2080_robovac():
 @pytest.fixture
 def mock_robovac_no_activity_mapping():
     """Create a mock RoboVac instance without activity mapping."""
-    with patch("custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None):
+    with patch(
+        "custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None
+    ):
         robovac = RoboVac(
             model_code="T2118",  # Model without activity mapping
             device_id="test_id",
@@ -105,7 +109,8 @@ def test_activity_mapping_completeness(mock_t2080_robovac):
     for state in expected_states:
         assert state in activity_mapping, f"Missing activity mapping for state: {state}"
         assert isinstance(
-            activity_mapping[state], VacuumActivity), f"Invalid activity type for state: {state}"
+            activity_mapping[state], VacuumActivity
+        ), f"Invalid activity type for state: {state}"
 
 
 def test_activity_mapping_values_are_valid(mock_t2080_robovac):
@@ -115,4 +120,6 @@ def test_activity_mapping_values_are_valid(mock_t2080_robovac):
     valid_activities = set(VacuumActivity)
 
     for state, activity in activity_mapping.items():
-        assert activity in valid_activities, f"Invalid VacuumActivity for state {state}: {activity}"
+        assert (
+            activity in valid_activities
+        ), f"Invalid VacuumActivity for state {state}: {activity}"

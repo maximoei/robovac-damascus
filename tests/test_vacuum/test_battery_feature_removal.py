@@ -48,9 +48,9 @@ class TestBatteryFeatureRemoval:
                 models_with_battery_command += 1
                 # Verify the command has a valid code
                 battery_command = commands[RobovacCommand.BATTERY]
-                assert "code" in battery_command, (
-                    f"{model_code} BATTERY command missing 'code' field"
-                )
+                assert (
+                    "code" in battery_command
+                ), f"{model_code} BATTERY command missing 'code' field"
                 assert isinstance(
                     battery_command["code"], int
                 ), f"{model_code} BATTERY command code is not an integer"
@@ -87,15 +87,16 @@ class TestBatteryFeatureRemoval:
             features = model_instance.homeassistant_features
 
             # Check that at least some expected features are present
-            has_expected_features = bool(features & (
-                VacuumEntityFeature.START
-                | VacuumEntityFeature.STOP
-                | VacuumEntityFeature.STATE
-            ))
+            has_expected_features = bool(
+                features
+                & (
+                    VacuumEntityFeature.START
+                    | VacuumEntityFeature.STOP
+                    | VacuumEntityFeature.STATE
+                )
+            )
 
-            assert (
-                has_expected_features
-            ), f"{model_code} missing basic vacuum features"
+            assert has_expected_features, f"{model_code} missing basic vacuum features"
 
     def test_all_models_have_features_defined(self) -> None:
         """Test that all models have homeassistant_features defined.
@@ -106,9 +107,7 @@ class TestBatteryFeatureRemoval:
             model_instance = model_class()
             features = model_instance.homeassistant_features
 
-            assert (
-                features > 0
-            ), f"{model_code} has no homeassistant_features defined"
+            assert features > 0, f"{model_code} has no homeassistant_features defined"
 
     def test_battery_feature_flag_value(self) -> None:
         """Test that we understand the BATTERY feature flag value.
@@ -118,6 +117,4 @@ class TestBatteryFeatureRemoval:
         # VacuumEntityFeature.BATTERY should have a specific bit value
         battery_feature = VacuumEntityFeature.BATTERY
         assert battery_feature > 0, "BATTERY feature should have a positive value"
-        assert isinstance(
-            battery_feature, int
-        ), "BATTERY feature should be an integer"
+        assert isinstance(battery_feature, int), "BATTERY feature should be an integer"

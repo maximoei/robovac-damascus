@@ -10,7 +10,6 @@ from typing import Optional
 
 from .vacuums import ROBOVAC_MODELS
 
-
 # Series detection patterns
 SERIES_PATTERNS = {
     "C": r"^T2(103|123)$",

@@ -1,4 +1,5 @@
 """RoboVac G32 Pro (T2259)"""
+
 from homeassistant.components.vacuum import VacuumEntityFeature
 from .base import RoboVacEntityFeature, RobovacCommand, RobovacModelDetails
 

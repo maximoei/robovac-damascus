@@ -51,6 +51,7 @@ class TuyaCodes(StrEnum):
 
     These codes can be overridden in model-specific implementations.
     """
+
     START_PAUSE = "2"
     DIRECTION = "3"
     MODE = "5"

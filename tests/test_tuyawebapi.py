@@ -12,6 +12,7 @@ def test_generate_new_device_id() -> None:
 
     # Verify all characters are valid base64 (alphanumeric for this purpose)
     import string
+
     allowed_chars = string.ascii_letters + string.digits
     for char in device_id:
         assert char in allowed_chars, f"Invalid character '{char}' in device ID"
@@ -25,7 +26,7 @@ def test_get_signature() -> None:
         "time": "1234567890",
         "deviceId": "test_device_id",
         "appVersion": "2.4.0",
-        "clientId": "test_client_id"
+        "clientId": "test_client_id",
     }
     encoded_post_data = '{"key":"value"}'
 
@@ -39,6 +40,7 @@ def test_get_signature() -> None:
 
 def test_unpadded_rsa() -> None:
     from custom_components.robovac.tuyawebapi import unpadded_rsa
+
     # Small numbers for fast testing
     # Plaintext "A" = 65
     res = unpadded_rsa(3, 33, b"A")
@@ -47,6 +49,7 @@ def test_unpadded_rsa() -> None:
 
 def test_shuffled_md5() -> None:
     from custom_components.robovac.tuyawebapi import shuffled_md5
+
     res = shuffled_md5("test")
     assert isinstance(res, str)
     assert len(res) == 32

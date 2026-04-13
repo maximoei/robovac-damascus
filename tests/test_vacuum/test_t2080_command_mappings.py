@@ -24,7 +24,9 @@ def mock_t2080_robovac() -> RoboVac:
         if module_name in sys.modules:
             importlib.reload(sys.modules[module_name])
 
-    with patch("custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None):
+    with patch(
+        "custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None
+    ):
         robovac = RoboVac(
             model_code="T2080",
             device_id="test_id",
@@ -36,38 +38,106 @@ def mock_t2080_robovac() -> RoboVac:
 
 def test_t2080_fan_speed_command_values(mock_t2080_robovac) -> None:
     """Test T2080 FAN_SPEED value mapping."""
-    assert mock_t2080_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "quiet") == "Quiet"
-    assert mock_t2080_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "standard") == "Standard"
-    assert mock_t2080_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "turbo") == "Turbo"
-    assert mock_t2080_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "max") == "Max"
-    assert mock_t2080_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "unknown") == "unknown"
+    assert (
+        mock_t2080_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "quiet")
+        == "Quiet"
+    )
+    assert (
+        mock_t2080_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "standard")
+        == "Standard"
+    )
+    assert (
+        mock_t2080_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "turbo")
+        == "Turbo"
+    )
+    assert (
+        mock_t2080_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "max")
+        == "Max"
+    )
+    assert (
+        mock_t2080_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "unknown")
+        == "unknown"
+    )
 
 
 def test_t2080_mop_level_command_values(mock_t2080_robovac) -> None:
     """Test T2080 MOP_LEVEL value mapping."""
     # Device uses symmetric values: low, middle, normal, strong
-    assert mock_t2080_robovac.getRoboVacCommandValue(RobovacCommand.MOP_LEVEL, "low") == "low"
-    assert mock_t2080_robovac.getRoboVacCommandValue(RobovacCommand.MOP_LEVEL, "middle") == "middle"
-    assert mock_t2080_robovac.getRoboVacCommandValue(RobovacCommand.MOP_LEVEL, "normal") == "normal"
-    assert mock_t2080_robovac.getRoboVacCommandValue(RobovacCommand.MOP_LEVEL, "strong") == "strong"
-    assert mock_t2080_robovac.getRoboVacCommandValue(RobovacCommand.MOP_LEVEL, "unknown") == "unknown"
+    assert (
+        mock_t2080_robovac.getRoboVacCommandValue(RobovacCommand.MOP_LEVEL, "low")
+        == "low"
+    )
+    assert (
+        mock_t2080_robovac.getRoboVacCommandValue(RobovacCommand.MOP_LEVEL, "middle")
+        == "middle"
+    )
+    assert (
+        mock_t2080_robovac.getRoboVacCommandValue(RobovacCommand.MOP_LEVEL, "normal")
+        == "normal"
+    )
+    assert (
+        mock_t2080_robovac.getRoboVacCommandValue(RobovacCommand.MOP_LEVEL, "strong")
+        == "strong"
+    )
+    assert (
+        mock_t2080_robovac.getRoboVacCommandValue(RobovacCommand.MOP_LEVEL, "unknown")
+        == "unknown"
+    )
 
 
 def test_t2080_mop_level_human_readable(mock_t2080_robovac) -> None:
     """Test T2080 MOP_LEVEL human-readable value conversion."""
     # Symmetric mapping for device values
-    assert mock_t2080_robovac.getRoboVacHumanReadableValue(RobovacCommand.MOP_LEVEL, "low") == "low"
-    assert mock_t2080_robovac.getRoboVacHumanReadableValue(RobovacCommand.MOP_LEVEL, "middle") == "middle"
-    assert mock_t2080_robovac.getRoboVacHumanReadableValue(RobovacCommand.MOP_LEVEL, "normal") == "normal"
-    assert mock_t2080_robovac.getRoboVacHumanReadableValue(RobovacCommand.MOP_LEVEL, "strong") == "strong"
+    assert (
+        mock_t2080_robovac.getRoboVacHumanReadableValue(RobovacCommand.MOP_LEVEL, "low")
+        == "low"
+    )
+    assert (
+        mock_t2080_robovac.getRoboVacHumanReadableValue(
+            RobovacCommand.MOP_LEVEL, "middle"
+        )
+        == "middle"
+    )
+    assert (
+        mock_t2080_robovac.getRoboVacHumanReadableValue(
+            RobovacCommand.MOP_LEVEL, "normal"
+        )
+        == "normal"
+    )
+    assert (
+        mock_t2080_robovac.getRoboVacHumanReadableValue(
+            RobovacCommand.MOP_LEVEL, "strong"
+        )
+        == "strong"
+    )
 
 
 def test_t2080_status_human_readable(mock_t2080_robovac) -> None:
     """Test T2080 STATUS human-readable value conversion for key states."""
-    assert mock_t2080_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "CAoAEAUyAggB") == "Paused"
-    assert mock_t2080_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "CgoAEAkaAggBMgA=") == "Auto Cleaning"
-    assert mock_t2080_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "BhADGgIIAQ==") == "Completed"
-    assert mock_t2080_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "BBADGgA=") == "Charging"
+    assert (
+        mock_t2080_robovac.getRoboVacHumanReadableValue(
+            RobovacCommand.STATUS, "CAoAEAUyAggB"
+        )
+        == "Paused"
+    )
+    assert (
+        mock_t2080_robovac.getRoboVacHumanReadableValue(
+            RobovacCommand.STATUS, "CgoAEAkaAggBMgA="
+        )
+        == "Auto Cleaning"
+    )
+    assert (
+        mock_t2080_robovac.getRoboVacHumanReadableValue(
+            RobovacCommand.STATUS, "BhADGgIIAQ=="
+        )
+        == "Completed"
+    )
+    assert (
+        mock_t2080_robovac.getRoboVacHumanReadableValue(
+            RobovacCommand.STATUS, "BBADGgA="
+        )
+        == "Charging"
+    )
 
 
 def test_t2080_mop_level_command_exists(mock_t2080_robovac) -> None:
@@ -75,10 +145,14 @@ def test_t2080_mop_level_command_exists(mock_t2080_robovac) -> None:
     commands = mock_t2080_robovac.model_details.commands
 
     # Verify MOP_LEVEL command exists
-    assert RobovacCommand.MOP_LEVEL in commands, "MOP_LEVEL command should be defined in T2080"
+    assert (
+        RobovacCommand.MOP_LEVEL in commands
+    ), "MOP_LEVEL command should be defined in T2080"
 
     # Verify DPS code from issue #105 debug logs
-    assert commands[RobovacCommand.MOP_LEVEL]["code"] == 10, "MOP_LEVEL should use DPS code 10"
+    assert (
+        commands[RobovacCommand.MOP_LEVEL]["code"] == 10
+    ), "MOP_LEVEL should use DPS code 10"
 
     # Verify all mop level values are defined
     mop_values = commands[RobovacCommand.MOP_LEVEL]["values"]

@@ -10,7 +10,9 @@ from custom_components.robovac.vacuums.base import RobovacCommand
 @pytest.fixture
 def mock_t2267_robovac() -> RoboVac:
     """Create a mock T2267 RoboVac instance for testing."""
-    with patch("custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None):
+    with patch(
+        "custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None
+    ):
         robovac = RoboVac(
             model_code="T2267",
             device_id="test_id",
@@ -40,38 +42,91 @@ def test_t2267_dps_codes(mock_t2267_robovac: RoboVac) -> None:
 
 def test_t2267_mode_command_values(mock_t2267_robovac: RoboVac) -> None:
     """Test T2267 MODE command value mappings."""
-    assert mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "auto") == "BBoCCAE="
-    assert mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "pause") == "AggN"
-    assert mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "Spot") == "AA=="
-    assert mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "return") == "AggG"
-    assert mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "Nosweep") == "AggO"
+    assert (
+        mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "auto")
+        == "BBoCCAE="
+    )
+    assert (
+        mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "pause")
+        == "AggN"
+    )
+    assert (
+        mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "Spot") == "AA=="
+    )
+    assert (
+        mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "return")
+        == "AggG"
+    )
+    assert (
+        mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "Nosweep")
+        == "AggO"
+    )
 
     # Unknown returns as-is
-    assert mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "unknown") == "unknown"
+    assert (
+        mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "unknown")
+        == "unknown"
+    )
 
 
 def test_t2267_fan_speed_command_values(mock_t2267_robovac: RoboVac) -> None:
     """Test T2267 FAN_SPEED command value mappings."""
-    assert mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "quiet") == "Quiet"
-    assert mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "standard") == "Standard"
-    assert mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "turbo") == "Turbo"
-    assert mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "max") == "Max"
-    assert mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "boost_iq") == "Boost_IQ"
+    assert (
+        mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "quiet")
+        == "Quiet"
+    )
+    assert (
+        mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "standard")
+        == "Standard"
+    )
+    assert (
+        mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "turbo")
+        == "Turbo"
+    )
+    assert (
+        mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "max")
+        == "Max"
+    )
+    assert (
+        mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "boost_iq")
+        == "Boost_IQ"
+    )
 
     # Unknown returns as-is
-    assert mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "unknown") == "unknown"
+    assert (
+        mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "unknown")
+        == "unknown"
+    )
 
 
 def test_t2267_direction_command_values(mock_t2267_robovac: RoboVac) -> None:
     """Test T2267 DIRECTION command value mappings."""
-    assert mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.DIRECTION, "brake") == "brake"
-    assert mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.DIRECTION, "forward") == "forward"
-    assert mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.DIRECTION, "back") == "back"
-    assert mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.DIRECTION, "left") == "left"
-    assert mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.DIRECTION, "right") == "right"
+    assert (
+        mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.DIRECTION, "brake")
+        == "brake"
+    )
+    assert (
+        mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.DIRECTION, "forward")
+        == "forward"
+    )
+    assert (
+        mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.DIRECTION, "back")
+        == "back"
+    )
+    assert (
+        mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.DIRECTION, "left")
+        == "left"
+    )
+    assert (
+        mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.DIRECTION, "right")
+        == "right"
+    )
 
     # Unknown returns as-is
-    assert mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.DIRECTION, "unknown") == "unknown"
+    assert (
+        mock_t2267_robovac.getRoboVacCommandValue(RobovacCommand.DIRECTION, "unknown")
+        == "unknown"
+    )
 
 
 def test_t2267_command_codes(mock_t2267_robovac: RoboVac) -> None:

@@ -11,7 +11,9 @@ from custom_components.robovac.vacuums.base import RobovacCommand
 @pytest.fixture
 def mock_t2080_robovac() -> RoboVac:
     """Create a mock T2080 RoboVac instance for testing."""
-    with patch("custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None):
+    with patch(
+        "custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None
+    ):
         robovac = RoboVac(
             model_code="T2080",
             device_id="test_id",
@@ -55,7 +57,7 @@ def mock_t2080_robovac() -> RoboVac:
                     "quiet": "Quiet",
                     "standard": "Standard",
                     "turbo": "Turbo",
-                    "max": "Max"
+                    "max": "Max",
                 },
             },
         }
@@ -65,58 +67,81 @@ def mock_t2080_robovac() -> RoboVac:
 def test_get_human_readable_value_status_success(mock_t2080_robovac) -> None:
     """Test getRoboVacHumanReadableValue returns correct human-readable status values."""
     # Test various status codes
-    assert mock_t2080_robovac.getRoboVacHumanReadableValue(
-        RobovacCommand.STATUS, "CAoAEAUyAggB"
-    ) == "Paused"
+    assert (
+        mock_t2080_robovac.getRoboVacHumanReadableValue(
+            RobovacCommand.STATUS, "CAoAEAUyAggB"
+        )
+        == "Paused"
+    )
 
-    assert mock_t2080_robovac.getRoboVacHumanReadableValue(
-        RobovacCommand.STATUS, "CAoCCAEQBTIA"
-    ) == "Room Cleaning"
+    assert (
+        mock_t2080_robovac.getRoboVacHumanReadableValue(
+            RobovacCommand.STATUS, "CAoCCAEQBTIA"
+        )
+        == "Room Cleaning"
+    )
 
-    assert mock_t2080_robovac.getRoboVacHumanReadableValue(
-        RobovacCommand.STATUS, "BhAHQgBSAA=="
-    ) == "Standby"
+    assert (
+        mock_t2080_robovac.getRoboVacHumanReadableValue(
+            RobovacCommand.STATUS, "BhAHQgBSAA=="
+        )
+        == "Standby"
+    )
 
-    assert mock_t2080_robovac.getRoboVacHumanReadableValue(
-        RobovacCommand.STATUS, "BBADGgA="
-    ) == "Charging"
+    assert (
+        mock_t2080_robovac.getRoboVacHumanReadableValue(
+            RobovacCommand.STATUS, "BBADGgA="
+        )
+        == "Charging"
+    )
 
 
 def test_get_human_readable_value_mode_success(mock_t2080_robovac) -> None:
     """Test getRoboVacHumanReadableValue returns correct human-readable mode values."""
-    assert mock_t2080_robovac.getRoboVacHumanReadableValue(
-        RobovacCommand.MODE, "BBoCCAE="
-    ) == "auto"
+    assert (
+        mock_t2080_robovac.getRoboVacHumanReadableValue(RobovacCommand.MODE, "BBoCCAE=")
+        == "auto"
+    )
 
-    assert mock_t2080_robovac.getRoboVacHumanReadableValue(
-        RobovacCommand.MODE, "AggN"
-    ) == "pause"
+    assert (
+        mock_t2080_robovac.getRoboVacHumanReadableValue(RobovacCommand.MODE, "AggN")
+        == "pause"
+    )
 
-    assert mock_t2080_robovac.getRoboVacHumanReadableValue(
-        RobovacCommand.MODE, "AA=="
-    ) == "Spot"
+    assert (
+        mock_t2080_robovac.getRoboVacHumanReadableValue(RobovacCommand.MODE, "AA==")
+        == "Spot"
+    )
 
 
 def test_get_human_readable_value_error_success(mock_t2080_robovac) -> None:
     """Test getRoboVacHumanReadableValue returns correct human-readable error values."""
-    assert mock_t2080_robovac.getRoboVacHumanReadableValue(
-        RobovacCommand.ERROR, "E001"
-    ) == "Wheel stuck"
+    assert (
+        mock_t2080_robovac.getRoboVacHumanReadableValue(RobovacCommand.ERROR, "E001")
+        == "Wheel stuck"
+    )
 
-    assert mock_t2080_robovac.getRoboVacHumanReadableValue(
-        RobovacCommand.ERROR, "E002"
-    ) == "Side brush stuck"
+    assert (
+        mock_t2080_robovac.getRoboVacHumanReadableValue(RobovacCommand.ERROR, "E002")
+        == "Side brush stuck"
+    )
 
 
 def test_get_human_readable_value_fan_speed_success(mock_t2080_robovac) -> None:
     """Test getRoboVacHumanReadableValue returns correct human-readable fan speed values."""
-    assert mock_t2080_robovac.getRoboVacHumanReadableValue(
-        RobovacCommand.FAN_SPEED, "quiet"
-    ) == "Quiet"
+    assert (
+        mock_t2080_robovac.getRoboVacHumanReadableValue(
+            RobovacCommand.FAN_SPEED, "quiet"
+        )
+        == "Quiet"
+    )
 
-    assert mock_t2080_robovac.getRoboVacHumanReadableValue(
-        RobovacCommand.FAN_SPEED, "standard"
-    ) == "Standard"
+    assert (
+        mock_t2080_robovac.getRoboVacHumanReadableValue(
+            RobovacCommand.FAN_SPEED, "standard"
+        )
+        == "Standard"
+    )
 
 
 def test_get_human_readable_value_unknown_value(mock_t2080_robovac) -> None:
@@ -133,7 +158,10 @@ def test_get_human_readable_value_unknown_value(mock_t2080_robovac) -> None:
         mock_logger.debug.assert_called_once()
         # Check that debug was called with the expected parameters
         call_args = mock_logger.debug.call_args
-        assert "Command %s with value %r (type: %s) not found for model %s" in call_args[0][0]
+        assert (
+            "Command %s with value %r (type: %s) not found for model %s"
+            in call_args[0][0]
+        )
         assert call_args[0][1] == "status"
         assert call_args[0][2] == "UNKNOWN_CODE"
         assert call_args[0][3] == "str"  # type name
@@ -176,14 +204,23 @@ def test_get_human_readable_value_command_no_values(mock_t2080_robovac) -> None:
 def test_get_human_readable_value_case_insensitive(mock_t2080_robovac) -> None:
     """Test getRoboVacHumanReadableValue handles case-insensitive matching."""
     # Test that "Quiet" (capitalized) matches "quiet" (lowercase key)
-    assert mock_t2080_robovac.getRoboVacHumanReadableValue(
-        RobovacCommand.FAN_SPEED, "Quiet"
-    ) == "Quiet"
+    assert (
+        mock_t2080_robovac.getRoboVacHumanReadableValue(
+            RobovacCommand.FAN_SPEED, "Quiet"
+        )
+        == "Quiet"
+    )
 
-    assert mock_t2080_robovac.getRoboVacHumanReadableValue(
-        RobovacCommand.FAN_SPEED, "STANDARD"
-    ) == "Standard"
+    assert (
+        mock_t2080_robovac.getRoboVacHumanReadableValue(
+            RobovacCommand.FAN_SPEED, "STANDARD"
+        )
+        == "Standard"
+    )
 
-    assert mock_t2080_robovac.getRoboVacHumanReadableValue(
-        RobovacCommand.FAN_SPEED, "TuRbO"
-    ) == "Turbo"
+    assert (
+        mock_t2080_robovac.getRoboVacHumanReadableValue(
+            RobovacCommand.FAN_SPEED, "TuRbO"
+        )
+        == "Turbo"
+    )

@@ -10,7 +10,9 @@ from custom_components.robovac.vacuums.T2320 import T2320
 @pytest.fixture
 def t2320_robovac() -> RoboVac:
     """Create a T2320 RoboVac instance for testing."""
-    with patch("custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None):
+    with patch(
+        "custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None
+    ):
         robovac = RoboVac(
             model_code="T2320",
             device_id="ebdf9164106a625759qybp",
@@ -26,7 +28,9 @@ class TestT2320CommandMappings:
     def test_return_home_command_value(self, t2320_robovac):
         """Test RETURN_HOME command returns boolean true as seen in debug logs."""
         # Debug log shows: "dps": {"153": true}
-        result = t2320_robovac.getRoboVacCommandValue(RobovacCommand.RETURN_HOME, "return_home")
+        result = t2320_robovac.getRoboVacCommandValue(
+            RobovacCommand.RETURN_HOME, "return_home"
+        )
         assert result is True or result == "True" or result == "true"
 
     def test_start_pause_command_exists(self, t2320_robovac):
@@ -38,10 +42,16 @@ class TestT2320CommandMappings:
     def test_start_pause_command_value(self, t2320_robovac):
         """Test START_PAUSE command returns boolean values."""
         # Debug log shows: "dps": {"2": false}
-        pause_result = t2320_robovac.getRoboVacCommandValue(RobovacCommand.START_PAUSE, "pause")
-        assert pause_result is False or pause_result == "False" or pause_result == "false"
+        pause_result = t2320_robovac.getRoboVacCommandValue(
+            RobovacCommand.START_PAUSE, "pause"
+        )
+        assert (
+            pause_result is False or pause_result == "False" or pause_result == "false"
+        )
 
-        start_result = t2320_robovac.getRoboVacCommandValue(RobovacCommand.START_PAUSE, "start")
+        start_result = t2320_robovac.getRoboVacCommandValue(
+            RobovacCommand.START_PAUSE, "start"
+        )
         assert start_result is True or start_result == "True" or start_result == "true"
 
     def test_mode_command_value(self, t2320_robovac):

@@ -106,6 +106,7 @@ async def test_battery_sensor_update_success(mock_vacuum_data: Any) -> None:
         if name == TuyaCodes.BATTERY_LEVEL:
             return str(TuyaCodes.BATTERY_LEVEL)
         return ""
+
     mock_vacuum_entity.get_dps_code.side_effect = mock_get_dps_code
 
     # Create mock hass data structure
@@ -180,6 +181,7 @@ async def test_battery_sensor_get_dps_code_alias(mock_vacuum_data: Any) -> None:
     """Test get_dps_code with BATTERY alias."""
     # We want to verify that in a real RoboVacEntity it works
     from custom_components.robovac.vacuum import RoboVacEntity
+
     mock_robovac = MagicMock()
     mock_robovac.getDpsCodes.return_value = {}
     with patch("custom_components.robovac.vacuum.RoboVac", return_value=mock_robovac):
@@ -493,7 +495,9 @@ async def test_consumable_sensor_update_no_vacuum(mock_vacuum_data: Any) -> None
     """Test consumable sensor update when vacuum entity not found."""
 
     mock_data = {CONF_ID: "test_id", "name": "Test"}
-    sensor = RobovacConsumableSensor(mock_data, "168", "side_brush", "Side Brush", "mdi:brush")
+    sensor = RobovacConsumableSensor(
+        mock_data, "168", "side_brush", "Side Brush", "mdi:brush"
+    )
 
     # Mock hass with no vacuum entity
     mock_hass = MagicMock()
@@ -637,8 +641,7 @@ async def test_notification_sensor_update_successful(mock_vacuum_data: Any) -> N
     sensor.hass = mock_hass
 
     with patch(
-        "custom_components.robovac.sensor.decode_error_code",
-        return_value="no_error"
+        "custom_components.robovac.sensor.decode_error_code", return_value="no_error"
     ):
         await sensor.async_update()
 
@@ -647,7 +650,9 @@ async def test_notification_sensor_update_successful(mock_vacuum_data: Any) -> N
 
 
 @pytest.mark.asyncio
-async def test_wifi_signal_sensor_update_no_data_first_time(mock_vacuum_data: Any) -> None:
+async def test_wifi_signal_sensor_update_no_data_first_time(
+    mock_vacuum_data: Any,
+) -> None:
     """Test WiFi signal sensor when no data available on first update."""
 
     mock_data = {CONF_ID: "test_id", "name": "Test"}
@@ -668,7 +673,9 @@ async def test_wifi_signal_sensor_update_no_data_first_time(mock_vacuum_data: An
 
 
 @pytest.mark.asyncio
-async def test_last_clean_duration_sensor_update_no_data_on_subsequent(mock_vacuum_data: Any) -> None:
+async def test_last_clean_duration_sensor_update_no_data_on_subsequent(
+    mock_vacuum_data: Any,
+) -> None:
     """Test last clean duration sensor keeps previous state if no new data."""
 
     mock_data = {CONF_ID: "test_id", "name": "Test"}
@@ -689,6 +696,7 @@ async def test_last_clean_duration_sensor_update_no_data_on_subsequent(mock_vacu
     # Should keep previous state since we already had data
     assert sensor._has_had_data
     assert sensor._attr_native_value == 60
+
 
 # ============================================================================
 # Successful Update Path Tests (Scenario #3)
@@ -744,7 +752,9 @@ async def test_error_sensor_successful_update_no_error(mock_vacuum_data: Any) ->
 
 
 @pytest.mark.asyncio
-async def test_notification_sensor_successful_update(mock_hass_with_valid_vacuum: Any) -> None:
+async def test_notification_sensor_successful_update(
+    mock_hass_with_valid_vacuum: Any,
+) -> None:
     """Test notification sensor successfully decodes and updates."""
 
     mock_data = {CONF_ID: "test_id", "name": "Test"}
@@ -753,7 +763,7 @@ async def test_notification_sensor_successful_update(mock_hass_with_valid_vacuum
 
     with patch(
         "custom_components.robovac.sensor.decode_error_code",
-        return_value="Task finished"
+        return_value="Task finished",
     ):
         await sensor.async_update()
 
@@ -763,20 +773,23 @@ async def test_notification_sensor_successful_update(mock_hass_with_valid_vacuum
 
 
 @pytest.mark.asyncio
-async def test_battery_sensor_successful_update(mock_hass_with_valid_vacuum: Any) -> None:
+async def test_battery_sensor_successful_update(
+    mock_hass_with_valid_vacuum: Any,
+) -> None:
     """Test battery sensor successfully updates with valid data."""
     mock_data = {CONF_ID: "test_id", "name": "Test"}
     sensor = RobovacBatterySensor(mock_data)
     sensor.hass = mock_hass_with_valid_vacuum
 
-    mock_hass_with_valid_vacuum.data["robovac"]["vacuums"]["test_id"].get_dps_code.return_value = str(
-        TuyaCodes.BATTERY_LEVEL
-    )
+    mock_hass_with_valid_vacuum.data["robovac"]["vacuums"][
+        "test_id"
+    ].get_dps_code.return_value = str(TuyaCodes.BATTERY_LEVEL)
 
     await sensor.async_update()
 
     assert sensor._attr_available is True
     assert sensor._attr_native_value == 85
+
 
 # ============================================================================
 # Missing DPS Code Tests (Scenario #5.2)
@@ -784,18 +797,23 @@ async def test_battery_sensor_successful_update(mock_hass_with_valid_vacuum: Any
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("sensor_class,dps_code", [
-    (RobovacErrorSensor, "177"),
-    (RobovacNotificationSensor, "178"),
-    (RobovacConsumableSensor, "168"),
-    (RobovacCleanTypeSensor, "154"),
-])
+@pytest.mark.parametrize(
+    "sensor_class,dps_code",
+    [
+        (RobovacErrorSensor, "177"),
+        (RobovacNotificationSensor, "178"),
+        (RobovacConsumableSensor, "168"),
+        (RobovacCleanTypeSensor, "154"),
+    ],
+)
 async def test_sensor_missing_dps_code(sensor_class: Any, dps_code: Any) -> None:
     """Test sensors handle missing DPS code in tuyastatus."""
     mock_data = {CONF_ID: "test_id", "name": "Test"}
 
     if sensor_class == RobovacConsumableSensor:
-        sensor = sensor_class(mock_data, dps_code, "side_brush", "Side Brush", "mdi:brush")
+        sensor = sensor_class(
+            mock_data, dps_code, "side_brush", "Side Brush", "mdi:brush"
+        )
     else:
         sensor = sensor_class(mock_data, dps_code)
 
@@ -810,6 +828,7 @@ async def test_sensor_missing_dps_code(sensor_class: Any, dps_code: Any) -> None
     await sensor.async_update()
 
     assert sensor._attr_available is False
+
 
 # ============================================================================
 # Malformed Data Error Handling Tests (Scenario #5.3)
@@ -855,6 +874,7 @@ async def test_battery_sensor_none_value(mock_vacuum_data: Any) -> None:
 
     assert sensor._attr_available is False
 
+
 # ============================================================================
 # State Persistence Tests (Scenario #5.4)
 # ============================================================================
@@ -874,8 +894,7 @@ async def test_error_sensor_state_persistence(mock_vacuum_data: Any) -> None:
     sensor.hass = mock_hass
 
     with patch(
-        "custom_components.robovac.sensor.decode_error_code",
-        return_value="Battery low"
+        "custom_components.robovac.sensor.decode_error_code", return_value="Battery low"
     ):
         await sensor.async_update()
 
@@ -906,7 +925,7 @@ async def test_firmware_sensor_state_persistence(mock_vacuum_data: Any) -> None:
 
     with patch(
         "custom_components.robovac.sensor.decode_device_info",
-        return_value={"software": "1.0.0"}
+        return_value={"software": "1.0.0"},
     ):
         await sensor.async_update()
 
@@ -936,7 +955,7 @@ async def test_last_clean_area_sensor_value_accumulation(mock_vacuum_data: Any) 
 
     with patch(
         "custom_components.robovac.sensor.decode_analysis_response",
-        return_value={"clean_area_m2": 50.5}
+        return_value={"clean_area_m2": 50.5},
     ):
         await sensor.async_update()
 
@@ -949,7 +968,7 @@ async def test_last_clean_area_sensor_value_accumulation(mock_vacuum_data: Any) 
 
     with patch(
         "custom_components.robovac.sensor.decode_analysis_response",
-        return_value={"clean_area_m2": 75.3}
+        return_value={"clean_area_m2": 75.3},
     ):
         await sensor.async_update()
 
@@ -961,7 +980,9 @@ async def test_last_clean_area_sensor_value_accumulation(mock_vacuum_data: Any) 
 async def test_consumable_sensor_successful_update(mock_vacuum_data: Any) -> None:
     """Test consumable sensor successfully updates with data."""
     mock_data = {CONF_ID: "test_id", "name": "Test"}
-    sensor = RobovacConsumableSensor(mock_data, "168", "side_brush", "Side Brush", "mdi:brush")
+    sensor = RobovacConsumableSensor(
+        mock_data, "168", "side_brush", "Side Brush", "mdi:brush"
+    )
 
     mock_vacuum = MagicMock()
     mock_vacuum.tuyastatus = {"168": "consumable_data"}
@@ -971,7 +992,7 @@ async def test_consumable_sensor_successful_update(mock_vacuum_data: Any) -> Non
 
     with patch(
         "custom_components.robovac.sensor.decode_consumable_response",
-        return_value={"side_brush": 45}
+        return_value={"side_brush": 45},
     ):
         await sensor.async_update()
 
@@ -993,7 +1014,7 @@ async def test_clean_type_sensor_successful_update(mock_vacuum_data: Any) -> Non
 
     with patch(
         "custom_components.robovac.sensor.decode_clean_param_response",
-        return_value={"running_clean_param": {"clean_type": "Sweep and mop"}}
+        return_value={"running_clean_param": {"clean_type": "Sweep and mop"}},
     ):
         await sensor.async_update()
 
@@ -1015,7 +1036,7 @@ async def test_work_status_v2_sensor_successful_update() -> None:
 
     with patch(
         "custom_components.robovac.sensor.decode_work_status_v2",
-        return_value="Cleaning"
+        return_value="Cleaning",
     ):
         await sensor.async_update()
 
@@ -1024,7 +1045,9 @@ async def test_work_status_v2_sensor_successful_update() -> None:
 
 
 @pytest.mark.asyncio
-async def test_last_clean_record_sensor_successful_update(mock_vacuum_data: Any) -> None:
+async def test_last_clean_record_sensor_successful_update(
+    mock_vacuum_data: Any,
+) -> None:
     """Test last clean record sensor successfully updates."""
     mock_data = {CONF_ID: "test_id", "name": "Test"}
     sensor = RobovacLastCleanRecordSensor(mock_data, "164")
@@ -1037,7 +1060,7 @@ async def test_last_clean_record_sensor_successful_update(mock_vacuum_data: Any)
 
     with patch(
         "custom_components.robovac.sensor.decode_clean_record_list",
-        return_value=[{"timestamp": 1234567890, "status": "successful"}]
+        return_value=[{"timestamp": 1234567890, "status": "successful"}],
     ):
         await sensor.async_update()
 
@@ -1048,7 +1071,6 @@ async def test_last_clean_record_sensor_successful_update(mock_vacuum_data: Any)
 # ============================================================================
 # Tests for async_setup_entry and entity creation
 # ============================================================================
-
 
 
 @pytest.mark.asyncio
@@ -1127,6 +1149,7 @@ async def test_battery_sensor_attribute_error() -> None:
 # Error Sensor additional tests
 # ============================================================================
 
+
 @pytest.mark.asyncio
 async def test_error_sensor_with_keyerror() -> None:
     """Test error sensor handles KeyError in data access."""
@@ -1170,6 +1193,7 @@ async def test_error_sensor_state_after_update() -> None:
 # Firmware Sensor additional tests
 # ============================================================================
 
+
 @pytest.mark.asyncio
 async def test_firmware_sensor_with_exception_during_decode() -> None:
     """Test firmware sensor handles exceptions during decode."""
@@ -1185,7 +1209,7 @@ async def test_firmware_sensor_with_exception_during_decode() -> None:
     # Mock decode to raise an exception
     with patch(
         "custom_components.robovac.sensor.decode_device_info",
-        side_effect=ValueError("Invalid data")
+        side_effect=ValueError("Invalid data"),
     ):
         await sensor.async_update()
 
@@ -1196,14 +1220,24 @@ async def test_firmware_sensor_with_exception_during_decode() -> None:
 # Consumable Sensor additional tests
 # ============================================================================
 
+
 @pytest.mark.asyncio
 async def test_consumable_sensor_multiple_types() -> None:
     """Test consumable sensors for different consumable types."""
-    consumable_types = ["side_brush", "rolling_brush", "filter_mesh", "scrape", "sensor", "dustbag"]
+    consumable_types = [
+        "side_brush",
+        "rolling_brush",
+        "filter_mesh",
+        "scrape",
+        "sensor",
+        "dustbag",
+    ]
 
     for consumable_type in consumable_types:
         mock_data = {CONF_ID: "test_id", "name": "Test"}
-        sensor = RobovacConsumableSensor(mock_data, "168", consumable_type, f"{consumable_type.title()}", "mdi:brush")
+        sensor = RobovacConsumableSensor(
+            mock_data, "168", consumable_type, f"{consumable_type.title()}", "mdi:brush"
+        )
 
         mock_vacuum = MagicMock()
         mock_vacuum.tuyastatus = {"168": "consumable_data"}
@@ -1213,7 +1247,7 @@ async def test_consumable_sensor_multiple_types() -> None:
 
         with patch(
             "custom_components.robovac.sensor.decode_consumable_response",
-            return_value={consumable_type: 75}
+            return_value={consumable_type: 75},
         ):
             await sensor.async_update()
 
@@ -1225,7 +1259,9 @@ async def test_consumable_sensor_multiple_types() -> None:
 async def test_consumable_sensor_missing_consumable_key() -> None:
     """Test consumable sensor handles missing consumable key in decoded data."""
     mock_data = {CONF_ID: "test_id", "name": "Test"}
-    sensor = RobovacConsumableSensor(mock_data, "168", "side_brush", "Side Brush", "mdi:brush")
+    sensor = RobovacConsumableSensor(
+        mock_data, "168", "side_brush", "Side Brush", "mdi:brush"
+    )
 
     mock_vacuum = MagicMock()
     mock_vacuum.tuyastatus = {"168": "consumable_data"}
@@ -1235,7 +1271,7 @@ async def test_consumable_sensor_missing_consumable_key() -> None:
 
     with patch(
         "custom_components.robovac.sensor.decode_consumable_response",
-        return_value={"rolling_brush": 80}  # Missing side_brush
+        return_value={"rolling_brush": 80},  # Missing side_brush
     ):
         await sensor.async_update()
 
@@ -1245,6 +1281,7 @@ async def test_consumable_sensor_missing_consumable_key() -> None:
 # ============================================================================
 # WiFi Sensor additional tests
 # ============================================================================
+
 
 @pytest.mark.asyncio
 async def test_wifi_signal_sensor_with_signal_value() -> None:
@@ -1260,7 +1297,7 @@ async def test_wifi_signal_sensor_with_signal_value() -> None:
 
     with patch(
         "custom_components.robovac.sensor.decode_unisetting_response",
-        return_value={"signal_strength": -45}  # dBm value
+        return_value={"signal_strength": -45},  # dBm value
     ):
         await sensor.async_update()
 
@@ -1282,7 +1319,7 @@ async def test_wifi_ssid_sensor_decoding() -> None:
 
     with patch(
         "custom_components.robovac.sensor.decode_unisetting_response",
-        return_value={"wifi_ssid": "MyNetwork"}
+        return_value={"wifi_ssid": "MyNetwork"},
     ):
         await sensor.async_update()
 
@@ -1293,6 +1330,7 @@ async def test_wifi_ssid_sensor_decoding() -> None:
 # ============================================================================
 # Last Clean Sensors additional tests
 # ============================================================================
+
 
 @pytest.mark.asyncio
 async def test_last_clean_area_sensor_with_area_value() -> None:
@@ -1308,7 +1346,7 @@ async def test_last_clean_area_sensor_with_area_value() -> None:
 
     with patch(
         "custom_components.robovac.sensor.decode_analysis_response",
-        return_value={"clean_area_m2": 45.5}
+        return_value={"clean_area_m2": 45.5},
     ):
         await sensor.async_update()
 
@@ -1330,7 +1368,7 @@ async def test_last_clean_duration_sensor_with_time_value() -> None:
 
     with patch(
         "custom_components.robovac.sensor.decode_analysis_response",
-        return_value={"clean_time_s": 1800}  # 30 minutes
+        return_value={"clean_time_s": 1800},  # 30 minutes
     ):
         await sensor.async_update()
 

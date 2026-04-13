@@ -14,8 +14,7 @@ class T2275(RobovacModelDetails):
         | VacuumEntityFeature.STOP
     )
     robovac_features = (
-        RoboVacEntityFeature.DO_NOT_DISTURB
-        | RoboVacEntityFeature.BOOST_IQ
+        RoboVacEntityFeature.DO_NOT_DISTURB | RoboVacEntityFeature.BOOST_IQ
     )
     commands = {
         RobovacCommand.MODE: {

@@ -142,7 +142,7 @@ def test_get_fan_speeds() -> None:
                     "standard": "Standard",
                     "boost_iq": "Boost_IQ",
                     "max": "Max",
-                }
+                },
             ),
             (
                 "T2250",
@@ -152,7 +152,7 @@ def test_get_fan_speeds() -> None:
                     "turbo": "Turbo",
                     "max": "Max",
                     "boost_iq": "Boost_IQ",
-                }
+                },
             ),
             (
                 "T2190",
@@ -162,7 +162,7 @@ def test_get_fan_speeds() -> None:
                     "standard": "Standard",
                     "turbo": "Turbo",
                     "max": "Max",
-                }
+                },
             ),
             (
                 "T2261",
@@ -172,7 +172,7 @@ def test_get_fan_speeds() -> None:
                     "standard": "Standard",
                     "turbo": "Turbo",
                     "max": "Max",
-                }
+                },
             ),
             (
                 "T2267",
@@ -182,7 +182,7 @@ def test_get_fan_speeds() -> None:
                     "standard": "Standard",
                     "turbo": "Turbo",
                     "max": "Max",
-                }
+                },
             ),
         ]
 
@@ -267,7 +267,7 @@ def test_get_robovac_command_value_with_decode_dps() -> None:
         )
 
         # T2277 should have decode_dps method
-        assert hasattr(robovac.model_details, 'decode_dps')
+        assert hasattr(robovac.model_details, "decode_dps")
 
 
 def test_get_supported_commands() -> None:
@@ -383,7 +383,7 @@ def test_get_supported_commands_returns_list() -> None:
         assert len(commands) > 0
         # All items should be RobovacCommand enums or strings
         for cmd in commands:
-            assert isinstance(cmd, (RobovacCommand, str)) or hasattr(cmd, 'name')
+            assert isinstance(cmd, (RobovacCommand, str)) or hasattr(cmd, "name")
 
 
 def test_dps_codes_cache() -> None:
@@ -421,7 +421,7 @@ def test_robovac_attributes() -> None:
 
         assert robovac.model_code == "T2118"
         assert robovac.model_details is not None
-        assert hasattr(robovac.model_details, 'commands')
+        assert hasattr(robovac.model_details, "commands")
         assert robovac._dps_codes_cache is None  # Cache should be empty initially
 
 

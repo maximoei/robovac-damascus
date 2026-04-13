@@ -11,7 +11,9 @@ from custom_components.robovac.vacuums.base import RobovacCommand
 @pytest.fixture
 def mock_t2275_robovac() -> RoboVac:
     """Create a mock T2275 RoboVac instance for testing."""
-    with patch("custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None):
+    with patch(
+        "custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None
+    ):
         robovac = RoboVac(
             model_code="T2275",
             device_id="test_id",
@@ -36,20 +38,39 @@ def test_t2275_dps_codes(mock_t2275_robovac) -> None:
 
 def test_t2275_mode_command_values(mock_t2275_robovac) -> None:
     """Test T2275 MODE command value mappings."""
-    assert mock_t2275_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "small_room") == "AA=="
-    assert mock_t2275_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "pause") == "AggN"
-    assert mock_t2275_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "edge") == "AggG"
-    assert mock_t2275_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "auto") == "BBoCCAE="
-    assert mock_t2275_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "nosweep") == "AggO"
+    assert (
+        mock_t2275_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "small_room")
+        == "AA=="
+    )
+    assert (
+        mock_t2275_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "pause")
+        == "AggN"
+    )
+    assert (
+        mock_t2275_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "edge") == "AggG"
+    )
+    assert (
+        mock_t2275_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "auto")
+        == "BBoCCAE="
+    )
+    assert (
+        mock_t2275_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "nosweep")
+        == "AggO"
+    )
 
     # Unknown returns as-is
-    assert mock_t2275_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "unknown") == "unknown"
+    assert (
+        mock_t2275_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "unknown")
+        == "unknown"
+    )
 
 
 def test_t2275_return_home_command_values(mock_t2275_robovac) -> None:
     """Test T2275 RETURN_HOME value mapping."""
     assert (
-        mock_t2275_robovac.getRoboVacCommandValue(RobovacCommand.RETURN_HOME, "return_home")
+        mock_t2275_robovac.getRoboVacCommandValue(
+            RobovacCommand.RETURN_HOME, "return_home"
+        )
         == "AggB"
     )
     assert (
@@ -72,8 +93,14 @@ def test_t2275_fan_speed_command_values(mock_t2275_robovac) -> None:
 
 def test_t2275_locate_command_values(mock_t2275_robovac) -> None:
     """Test T2275 LOCATE value mapping."""
-    assert mock_t2275_robovac.getRoboVacCommandValue(RobovacCommand.LOCATE, "locate") == "AggC"
-    assert mock_t2275_robovac.getRoboVacCommandValue(RobovacCommand.LOCATE, "unknown") == "unknown"
+    assert (
+        mock_t2275_robovac.getRoboVacCommandValue(RobovacCommand.LOCATE, "locate")
+        == "AggC"
+    )
+    assert (
+        mock_t2275_robovac.getRoboVacCommandValue(RobovacCommand.LOCATE, "unknown")
+        == "unknown"
+    )
 
 
 def test_t2275_command_codes(mock_t2275_robovac) -> None:

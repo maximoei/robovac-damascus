@@ -1,4 +1,5 @@
 """RoboVac 25C Max (T2132)"""
+
 from homeassistant.components.vacuum import VacuumEntityFeature
 from .base import RoboVacEntityFeature, RobovacCommand, RobovacModelDetails
 
@@ -15,10 +16,7 @@ class T2132(RobovacModelDetails):
         | VacuumEntityFeature.STATE
         | VacuumEntityFeature.STOP
     )
-    robovac_features = (
-        RoboVacEntityFeature.EDGE
-        | RoboVacEntityFeature.SMALL_ROOM
-    )
+    robovac_features = RoboVacEntityFeature.EDGE | RoboVacEntityFeature.SMALL_ROOM
     commands = {
         RobovacCommand.START_PAUSE: {
             "code": 2,

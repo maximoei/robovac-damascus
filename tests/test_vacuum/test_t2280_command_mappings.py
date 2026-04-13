@@ -20,7 +20,9 @@ def test_t2280_registered_in_robovac_models() -> None:
 @pytest.fixture
 def mock_t2280_robovac() -> RoboVac:
     """Create a mock T2280 RoboVac instance for testing."""
-    with patch("custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None):
+    with patch(
+        "custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None
+    ):
         robovac = RoboVac(
             model_code="T2280",
             device_id="test_id",
@@ -32,8 +34,14 @@ def mock_t2280_robovac() -> RoboVac:
 
 def test_t2280_mode_command_values(mock_t2280_robovac) -> None:
     """Test T2280 MODE command sends base64 encoded values."""
-    assert mock_t2280_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "auto") == "BBoCCAE="
-    assert mock_t2280_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "pause") == "AggN"
+    assert (
+        mock_t2280_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "auto")
+        == "BBoCCAE="
+    )
+    assert (
+        mock_t2280_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "pause")
+        == "AggN"
+    )
 
 
 def test_t2280_model_has_commands(mock_t2280_robovac) -> None:

@@ -38,7 +38,6 @@ ERROR_MESSAGES = {
 
 from .proto_decode import T2277_ERROR_CODES
 
-
 TROUBLESHOOTING_CONTEXT = {
     1: {
         "troubleshooting": [

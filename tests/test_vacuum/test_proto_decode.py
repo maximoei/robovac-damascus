@@ -22,7 +22,6 @@ from custom_components.robovac.proto_decode import (
 )
 from custom_components.robovac.errors import getT2277ErrorMessage
 
-
 # ============================================================================
 # Tests for _parse_varint
 # ============================================================================
@@ -117,9 +116,9 @@ class TestParseProto:
         """Test parsing single length-delimited field (field_2 = some bytes)."""
         # Tag for field_2 length-delimited = (2 << 3) | 2 = 0x12
         # Length = 3, value = b'hello'[0:3] = b'hel'
-        data = bytes([0x12, 0x03]) + b'hel'
+        data = bytes([0x12, 0x03]) + b"hel"
         fields = _parse_proto(data)
-        assert fields == {2: b'hel'}
+        assert fields == {2: b"hel"}
 
     def test_repeated_varint_field_becomes_list(self) -> None:
         """Test parsing repeated varint field creates a list."""
@@ -140,9 +139,9 @@ class TestParseProto:
         # field_1 = 5 (varint)
         # field_2 = b'hi' (length-delimited)
         # field_3 = 10 (varint)
-        data = bytes([0x08, 0x05, 0x12, 0x02]) + b'hi' + bytes([0x18, 0x0A])
+        data = bytes([0x08, 0x05, 0x12, 0x02]) + b"hi" + bytes([0x18, 0x0A])
         fields = _parse_proto(data)
-        assert fields == {1: 5, 2: b'hi', 3: 10}
+        assert fields == {1: 5, 2: b"hi", 3: 10}
 
     def test_field_numbers_with_higher_values(self) -> None:
         """Test parsing fields with higher field numbers."""
@@ -185,18 +184,18 @@ class TestDecodeModeCtrl:
     @pytest.mark.parametrize(
         "raw_b64,expected",
         [
-            ("AA==", "standby"),            # empty payload
-            ("AggN", "pause"),              # method=PAUSE_TASK (13)
-            ("AggG", "stop"),               # method=START_GOHOME (6)
-            ("BBoCCAE=", "auto"),           # param.auto_clean present
-            ("AggO", "nosweep"),            # method=RESUME_TASK (14)
-            ("BAgNEGg=", "pause"),          # method=PAUSE_TASK (13) with seq=104
-            ("BAgOEGg=", "nosweep"),        # method=RESUME_TASK (14) with seq=104
-            ("BAgOEGw=", "nosweep"),        # method=RESUME_TASK (14) with seq=108
+            ("AA==", "standby"),  # empty payload
+            ("AggN", "pause"),  # method=PAUSE_TASK (13)
+            ("AggG", "stop"),  # method=START_GOHOME (6)
+            ("BBoCCAE=", "auto"),  # param.auto_clean present
+            ("AggO", "nosweep"),  # method=RESUME_TASK (14)
+            ("BAgNEGg=", "pause"),  # method=PAUSE_TASK (13) with seq=104
+            ("BAgOEGg=", "nosweep"),  # method=RESUME_TASK (14) with seq=104
+            ("BAgOEGw=", "nosweep"),  # method=RESUME_TASK (14) with seq=108
             # Three new command values
-            ("AhBs", "auto"),               # seq=108 only - active session update
-            ("BAgGEHA=", "stop"),           # method=START_GOHOME (6), seq=112
-            ("BAgCEHQ=", "spot"),           # method=START_SELECT_ZONES (2), seq=116
+            ("AhBs", "auto"),  # seq=108 only - active session update
+            ("BAgGEHA=", "stop"),  # method=START_GOHOME (6), seq=112
+            ("BAgCEHQ=", "spot"),  # method=START_SELECT_ZONES (2), seq=116
         ],
     )
     def test_mode_ctrl_payloads(self, raw_b64: str, expected: str) -> None:
@@ -223,8 +222,8 @@ class TestDecodeModeCtrl:
 
     def test_mode_ctrl_new_methods(self) -> None:
         """Test newly mapped method values."""
-        assert decode_mode_ctrl("BAgGEHA=") == "stop"     # method=6
-        assert decode_mode_ctrl("BAgCEHQ=") == "spot"     # method=2
+        assert decode_mode_ctrl("BAgGEHA=") == "stop"  # method=6
+        assert decode_mode_ctrl("BAgCEHQ=") == "spot"  # method=2
 
 
 # ============================================================================
@@ -239,16 +238,16 @@ class TestDecodeWorkStatus:
         "raw_b64,expected",
         [
             # Confirmed working cases from T2277.py reverse lookup
-            ("AhAB", "Sleeping"),           # state=SLEEP(1)
-            ("BgoAEAUyAA==", "auto"),       # state=CLEANING, mode=AUTO
-            ("CAoAEAUyAggB", "Paused"),     # state=CLEANING, paused
-            ("CAoCCAEQBTIA", "room"),       # state=CLEANING, SELECT_ROOM mode
+            ("AhAB", "Sleeping"),  # state=SLEEP(1)
+            ("BgoAEAUyAA==", "auto"),  # state=CLEANING, mode=AUTO
+            ("CAoAEAUyAggB", "Paused"),  # state=CLEANING, paused
+            ("CAoCCAEQBTIA", "room"),  # state=CLEANING, SELECT_ROOM mode
             ("CgoCCAEQBTICCAE=", "room_pause"),  # SELECT_ROOM mode, paused
-            ("CAoCCAIQBTIA", "spot"),       # state=CLEANING, SELECT_ZONE mode
+            ("CAoCCAIQBTIA", "spot"),  # state=CLEANING, SELECT_ZONE mode
             ("CgoCCAIQBTICCAE=", "spot_pause"),  # SELECT_ZONE mode, paused
-            ("BAoAEAY=", "start_manual"),   # state=REMOTE_CTRL(6)
+            ("BAoAEAY=", "start_manual"),  # state=REMOTE_CTRL(6)
             ("BBAHQgA=", "going_to_charge"),  # state=GO_HOME(7), no breakpoint
-            ("BBADGgA=", "Charging"),       # state=CHARGING(3), charging.state != DONE
+            ("BBADGgA=", "Charging"),  # state=CHARGING(3), charging.state != DONE
             ("BhADGgIIAQ==", "completed"),  # state=CHARGING(3), charging.state=DONE
         ],
     )
@@ -475,6 +474,7 @@ class TestDecodeWorkStatusV2:
     def test_empty_payload_returns_standby(self) -> None:
         """Outer with no WorkStatus field → Standby."""
         import base64
+
         # build: outer has no field_1
         raw = base64.b64encode(bytes([0x00])).decode()
         result = decode_work_status_v2(raw)
@@ -500,6 +500,7 @@ class TestDecodeErrorCodeExtended:
     def test_field2_packed_single_known_error(self) -> None:
         """field_2 as packed repeated uint32 with a known error code."""
         import base64
+
         # Build proto: field_2 packed = [4111]
         # 4111 varint = [0x8F, 0x20]
         # tag for field_2 packed = (2<<3)|2 = 0x12
@@ -511,6 +512,7 @@ class TestDecodeErrorCodeExtended:
     def test_prompt_code_76_at_station(self) -> None:
         """Code 76 (P0076) maps to 'Cannot start task while at charging dock'."""
         import base64
+
         # field_2 packed = [76]
         proto = bytes([0x12, 0x01, 0x4C])  # tag=0x12, length=1, varint 76=0x4C
         raw = base64.b64encode(bytes([len(proto)]) + proto).decode()
@@ -520,6 +522,7 @@ class TestDecodeErrorCodeExtended:
     def test_prompt_code_40_heading_home(self) -> None:
         """Code 40 (P0040) maps to 'Task finished, returning to dock'."""
         import base64
+
         proto = bytes([0x12, 0x01, 0x28])  # varint 40=0x28
         raw = base64.b64encode(bytes([len(proto)]) + proto).decode()
         result = decode_error_code(raw)
@@ -528,6 +531,7 @@ class TestDecodeErrorCodeExtended:
     def test_code_zero_discarded(self) -> None:
         """Code 0 (P0000_NONE) is treated as no notification."""
         import base64
+
         proto = bytes([0x12, 0x01, 0x00])  # field_2 packed = [0]
         raw = base64.b64encode(bytes([len(proto)]) + proto).decode()
         assert decode_error_code(raw) == "no_error"
@@ -555,6 +559,7 @@ class TestDecodeCleanParamResponse:
     def test_empty_payload_returns_empty_dict(self) -> None:
         """Empty payload → empty dict."""
         import base64
+
         raw = base64.b64encode(bytes([0x00])).decode()
         result = decode_clean_param_response(raw)
         assert result == {}
@@ -581,6 +586,7 @@ class TestDecodeConsumableResponse:
     def test_empty_payload_returns_empty_dict(self) -> None:
         """Empty payload → empty dict."""
         import base64
+
         raw = base64.b64encode(bytes([0x00])).decode()
         result = decode_consumable_response(raw)
         assert result == {}
@@ -647,6 +653,7 @@ class TestDecodeAnalysisResponse:
     def test_empty_payload_returns_empty(self) -> None:
         """Empty payload → empty dict."""
         import base64
+
         raw = base64.b64encode(bytes([0x00])).decode()
         assert decode_analysis_response(raw) == {}
 
@@ -672,6 +679,7 @@ class TestDecodeCleanRecordList:
     def test_empty_payload_returns_empty_list(self) -> None:
         """Empty payload → empty list."""
         import base64
+
         raw = base64.b64encode(bytes([0x00])).decode()
         assert decode_clean_record_list(raw) == []
 
@@ -688,11 +696,12 @@ class TestDecodeAnalysisStats:
         """Decode the observed DPS 167 sample."""
         result = decode_analysis_stats("HwoFCPABEAQSCgigik0Q52cYgAMaCgjsiE0Q5GcY/gI=")
         assert "clean" in result
-        assert result["clean"].get(1) == 240   # clean_id = 240
+        assert result["clean"].get(1) == 240  # clean_id = 240
 
     def test_empty_payload_returns_empty_dict(self) -> None:
         """Empty payload → empty dict."""
         import base64
+
         raw = base64.b64encode(bytes([0x00])).decode()
         assert decode_analysis_stats(raw) == {}
 
@@ -808,6 +817,7 @@ class TestEdgeCases:
 # Additional edge case tests
 # ============================================================================
 
+
 def test_analyze_response_with_empty_data() -> None:
     """Test decode_analysis_response handles empty/minimal data."""
     # AA== is empty payload
@@ -819,7 +829,7 @@ def test_analyze_response_with_empty_data() -> None:
 def test_clean_record_list_with_multiple_records() -> None:
     """Test decode_clean_record_list with multiple cleaning records."""
     # Create a payload with multiple records
-    data = b'\x0a\x04\x08\x01\x10\x02\x0a\x04\x08\x03\x10\x04'
+    data = b"\x0a\x04\x08\x01\x10\x02\x0a\x04\x08\x03\x10\x04"
     test_payload = base64.b64encode(data).decode()
     result = decode_clean_record_list(test_payload)
     # Should return list or None
@@ -852,15 +862,15 @@ def test_parse_varint_boundary_values() -> None:
     from custom_components.robovac.proto_decode import _parse_varint
 
     # Test zero
-    offset, value = _parse_varint(b'\x00', 0)
+    offset, value = _parse_varint(b"\x00", 0)
     assert value == 0
 
     # Test max single byte (127)
-    offset, value = _parse_varint(b'\x7f', 0)
+    offset, value = _parse_varint(b"\x7f", 0)
     assert value == 127
 
     # Test value requiring multiple bytes
-    offset, value = _parse_varint(b'\x80\x01', 0)
+    offset, value = _parse_varint(b"\x80\x01", 0)
     assert value == 128
 
 

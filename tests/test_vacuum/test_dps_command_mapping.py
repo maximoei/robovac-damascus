@@ -24,7 +24,9 @@ def test_dps_codes_match_expected_values() -> None:
 
     for model_code in test_models:
         # Initialize RoboVac instance with mock parameters
-        with patch("custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None):
+        with patch(
+            "custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None
+        ):
             vacuum = RoboVac(
                 model_code=model_code,
                 device_id="test_id",
@@ -52,7 +54,9 @@ def test_dps_codes_match_expected_values() -> None:
 def test_nonstandard_model_dps_codes() -> None:
     """Test that non-standard models have DPS codes that differ from defaults."""
     # Setup test for a model with non-standard codes (T2267)
-    with patch("custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None):
+    with patch(
+        "custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None
+    ):
         vacuum = RoboVac(
             model_code="T2267",
             device_id="test_id",
@@ -72,7 +76,9 @@ def test_nonstandard_model_dps_codes() -> None:
 
 def test_getDpsCodes_extraction_method() -> None:
     """Test that getDpsCodes extracts codes correctly from different command formats."""
-    with patch("custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None):
+    with patch(
+        "custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None
+    ):
         # Test T1250 (model using default codes with dictionary structure)
         vacuum_t1250 = RoboVac(
             model_code="T1250",
@@ -152,10 +158,10 @@ async def test_vacuum_update_uses_correct_dps_codes() -> None:
     mock_robovac = MagicMock()
     mock_robovac._dps = {
         "15": "Cleaning",  # Status
-        "104": 75,         # Battery level
-        "106": 0,          # Error code
-        "5": "auto",       # Mode
-        "102": "Standard"  # Fan speed
+        "104": 75,  # Battery level
+        "106": 0,  # Error code
+        "5": "auto",  # Mode
+        "102": "Standard",  # Fan speed
     }
 
     # Mock the new methods to return values as-is (no conversion)

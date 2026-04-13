@@ -5,6 +5,7 @@ Previously misconfigured with protobuf-encoded DPS 152-173 which caused
 "Incomplete read" errors (Issue #42). The actual device responds on protocol
 3.5 with human-readable DPS values on codes 1-135.
 """
+
 from homeassistant.components.vacuum import VacuumEntityFeature
 from .base import RoboVacEntityFeature, RobovacCommand, RobovacModelDetails
 

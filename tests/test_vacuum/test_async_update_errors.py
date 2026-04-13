@@ -38,7 +38,8 @@ async def test_async_update_sets_error_when_no_ip(
 
 @pytest.mark.asyncio
 async def test_async_update_sets_error_when_vacuum_not_initialized(
-    mock_robovac, mock_vacuum_data,
+    mock_robovac,
+    mock_vacuum_data,
 ) -> None:
     """Test async_update sets INITIALIZATION_FAILED when vacuum is None."""
     with patch("custom_components.robovac.vacuum.RoboVac", return_value=mock_robovac):

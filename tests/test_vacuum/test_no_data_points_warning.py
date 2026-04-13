@@ -72,11 +72,17 @@ def test_update_entity_values_with_valid_data(vacuum_entity):
 def test_battery_sensor_exists_separately(vacuum_entity):
     """Test that battery level is handled by separate sensor, not vacuum entity."""
     # Battery level attribute should not exist on vacuum entity
-    assert not hasattr(vacuum_entity, "_attr_battery_level") or vacuum_entity._attr_battery_level is None
+    assert (
+        not hasattr(vacuum_entity, "_attr_battery_level")
+        or vacuum_entity._attr_battery_level is None
+    )
 
     # Battery data should still be available in tuyastatus for sensor to read
     vacuum_entity.tuyastatus = {"104": 85}
     vacuum_entity.update_entity_values()
 
     # Vacuum entity should not have battery_level attribute set
-    assert not hasattr(vacuum_entity, "_attr_battery_level") or vacuum_entity._attr_battery_level is None
+    assert (
+        not hasattr(vacuum_entity, "_attr_battery_level")
+        or vacuum_entity._attr_battery_level is None
+    )

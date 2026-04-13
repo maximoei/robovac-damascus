@@ -2,6 +2,8 @@
 max-line-length = 180
 exclude = .git,__pycache__,docs/source/conf.py,old,build,dist,.venv
 ignore =
+    # E203: Whitespace before ':' (conflicts with black slice formatting)
+    E203,
     # D100: Missing docstring in public module
     D100,
     # D101: Missing docstring in public class

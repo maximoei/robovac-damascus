@@ -11,7 +11,9 @@ from custom_components.robovac.vacuums.base import RobovacCommand
 @pytest.fixture
 def mock_t2277_robovac() -> RoboVac:
     """Create a mock T2277 RoboVac instance for testing."""
-    with patch("custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None):
+    with patch(
+        "custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None
+    ):
         robovac = RoboVac(
             model_code="T2277",
             device_id="test_id",
@@ -37,15 +39,35 @@ def test_t2277_dps_codes(mock_t2277_robovac: RoboVac) -> None:
 
 def test_t2277_mode_command_values(mock_t2277_robovac: RoboVac) -> None:
     """Test T2277 MODE command value mappings."""
-    assert mock_t2277_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "standby") == "AA=="
-    assert mock_t2277_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "pause") == "AggN"
-    assert mock_t2277_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "stop") == "AggG"
-    assert mock_t2277_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "return") == "AggG"
-    assert mock_t2277_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "auto") == "BBoCCAE="
-    assert mock_t2277_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "nosweep") == "AggO"
+    assert (
+        mock_t2277_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "standby")
+        == "AA=="
+    )
+    assert (
+        mock_t2277_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "pause")
+        == "AggN"
+    )
+    assert (
+        mock_t2277_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "stop") == "AggG"
+    )
+    assert (
+        mock_t2277_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "return")
+        == "AggG"
+    )
+    assert (
+        mock_t2277_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "auto")
+        == "BBoCCAE="
+    )
+    assert (
+        mock_t2277_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "nosweep")
+        == "AggO"
+    )
 
     # Unknown returns as-is
-    assert mock_t2277_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "unknown") == "unknown"
+    assert (
+        mock_t2277_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "unknown")
+        == "unknown"
+    )
 
 
 def test_t2277_return_home_command_values(mock_t2277_robovac: RoboVac) -> None:
@@ -62,10 +84,22 @@ def test_t2277_return_home_command_values(mock_t2277_robovac: RoboVac) -> None:
 
 def test_t2277_fan_speed_command_values(mock_t2277_robovac: RoboVac) -> None:
     """Test T2277 FAN_SPEED value mapping."""
-    assert mock_t2277_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "quiet") == "Quiet"
-    assert mock_t2277_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "standard") == "Standard"
-    assert mock_t2277_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "turbo") == "Turbo"
-    assert mock_t2277_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "max") == "Max"
+    assert (
+        mock_t2277_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "quiet")
+        == "Quiet"
+    )
+    assert (
+        mock_t2277_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "standard")
+        == "Standard"
+    )
+    assert (
+        mock_t2277_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "turbo")
+        == "Turbo"
+    )
+    assert (
+        mock_t2277_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "max")
+        == "Max"
+    )
     assert (
         mock_t2277_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "unknown")
         == "unknown"
@@ -74,8 +108,14 @@ def test_t2277_fan_speed_command_values(mock_t2277_robovac: RoboVac) -> None:
 
 def test_t2277_locate_command_values(mock_t2277_robovac: RoboVac) -> None:
     """Test T2277 LOCATE value mapping."""
-    assert mock_t2277_robovac.getRoboVacCommandValue(RobovacCommand.LOCATE, "locate") == "true"
-    assert mock_t2277_robovac.getRoboVacCommandValue(RobovacCommand.LOCATE, "unknown") == "unknown"
+    assert (
+        mock_t2277_robovac.getRoboVacCommandValue(RobovacCommand.LOCATE, "locate")
+        == "true"
+    )
+    assert (
+        mock_t2277_robovac.getRoboVacCommandValue(RobovacCommand.LOCATE, "unknown")
+        == "unknown"
+    )
 
 
 def test_t2277_command_codes(mock_t2277_robovac: RoboVac) -> None:
@@ -142,7 +182,10 @@ def test_t2277_decode_dps_exception_handling() -> None:
     from unittest.mock import patch
 
     # Mock proto_decode to raise an exception
-    with patch("custom_components.robovac.proto_decode.decode_mode_ctrl", side_effect=Exception("decode error")):
+    with patch(
+        "custom_components.robovac.proto_decode.decode_mode_ctrl",
+        side_effect=Exception("decode error"),
+    ):
         result = T2277.decode_dps(152, "AggN")
         assert result is None
 
@@ -154,7 +197,7 @@ def test_t2277_decode_dps_clean_param() -> None:
 
     with patch(
         "custom_components.robovac.proto_decode.decode_clean_param_response",
-        return_value={"running_clean_param": {"fan": "Standard"}}
+        return_value={"running_clean_param": {"fan": "Standard"}},
     ):
         result = T2277.decode_dps(154, "AA==")
         assert result == "Standard"
@@ -167,7 +210,7 @@ def test_t2277_decode_dps_clean_records() -> None:
 
     with patch(
         "custom_components.robovac.proto_decode.decode_clean_record_list",
-        return_value=[{"timestamp": 1234567890}]
+        return_value=[{"timestamp": 1234567890}],
     ):
         result = T2277.decode_dps(164, "AA==")
         assert "record" in result
@@ -180,7 +223,7 @@ def test_t2277_decode_dps_consumables() -> None:
 
     with patch(
         "custom_components.robovac.proto_decode.decode_consumable_response",
-        return_value={"side_brush": 100, "filter": 80}
+        return_value={"side_brush": 100, "filter": 80},
     ):
         result = T2277.decode_dps(168, "AA==")
         assert "side_brush" in result
@@ -193,7 +236,7 @@ def test_t2277_decode_dps_device_info() -> None:
 
     with patch(
         "custom_components.robovac.proto_decode.decode_device_info",
-        return_value={"product_name": "T2277", "software": "1.0.0"}
+        return_value={"product_name": "T2277", "software": "1.0.0"},
     ):
         result = T2277.decode_dps(169, "AA==")
         assert "product_name" in result
@@ -206,7 +249,7 @@ def test_t2277_decode_dps_work_status_v2() -> None:
 
     with patch(
         "custom_components.robovac.proto_decode.decode_work_status_v2",
-        return_value="Cleaning"
+        return_value="Cleaning",
     ):
         result = T2277.decode_dps(173, "AA==")
         assert result == "Cleaning"
@@ -219,7 +262,7 @@ def test_t2277_decode_dps_unisetting() -> None:
 
     with patch(
         "custom_components.robovac.proto_decode.decode_unisetting_response",
-        return_value={"wifi_ssid": "MyNetwork"}
+        return_value={"wifi_ssid": "MyNetwork"},
     ):
         result = T2277.decode_dps(176, "AA==")
         assert "wifi_ssid" in result
@@ -232,7 +275,7 @@ def test_t2277_decode_dps_error_code() -> None:
 
     with patch(
         "custom_components.robovac.proto_decode.decode_error_code",
-        return_value="Battery low"
+        return_value="Battery low",
     ):
         result = T2277.decode_dps(177, "AA==")
         assert result == "Battery low"
@@ -245,7 +288,7 @@ def test_t2277_decode_dps_last_clean() -> None:
 
     with patch(
         "custom_components.robovac.proto_decode.decode_analysis_response",
-        return_value={"clean_time_s": 3600}
+        return_value={"clean_time_s": 3600},
     ):
         result = T2277.decode_dps(179, "AA==")
         assert "clean_time_s" in result

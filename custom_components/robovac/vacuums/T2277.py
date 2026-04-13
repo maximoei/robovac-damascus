@@ -1,4 +1,5 @@
 """eufy Clean L60 SES (T2277)"""
+
 import logging
 from homeassistant.components.vacuum import VacuumEntityFeature
 from .base import RoboVacEntityFeature, RobovacCommand, RobovacModelDetails
@@ -19,8 +20,7 @@ class T2277(RobovacModelDetails):
         | VacuumEntityFeature.STOP
     )
     robovac_features = (
-        RoboVacEntityFeature.DO_NOT_DISTURB
-        | RoboVacEntityFeature.BOOST_IQ
+        RoboVacEntityFeature.DO_NOT_DISTURB | RoboVacEntityFeature.BOOST_IQ
     )
     commands = {
         RobovacCommand.MODE: {
@@ -32,24 +32,24 @@ class T2277(RobovacModelDetails):
             # Decoded by decode_dps() via proto_decode.decode_mode_ctrl().
             "code": 152,
             "values": {
-                "standby": "AA==",      # empty payload
-                "pause": "AggN",      # method=PAUSE_TASK (13)
-                "stop": "AggG",      # method=START_GOHOME (6)
-                "return": "AggG",      # method=START_GOHOME (6)
+                "standby": "AA==",  # empty payload
+                "pause": "AggN",  # method=PAUSE_TASK (13)
+                "stop": "AggG",  # method=START_GOHOME (6)
+                "return": "AggG",  # method=START_GOHOME (6)
                 "auto": "BBoCCAE=",  # param.auto_clean={clean_times=1}
-                "nosweep": "AggO",      # method=RESUME_TASK (14)
+                "nosweep": "AggO",  # method=RESUME_TASK (14)
             },
         },
         RobovacCommand.START_PAUSE: {
             "code": 152,
             "values": {
-                "pause": "AggN",         # method=PAUSE_TASK (13)
+                "pause": "AggN",  # method=PAUSE_TASK (13)
             },
         },
         RobovacCommand.RETURN_HOME: {
             "code": 152,
             "values": {
-                "return": "AggG",        # method=START_GOHOME (6)
+                "return": "AggG",  # method=START_GOHOME (6)
             },
         },
         RobovacCommand.STATUS: {
@@ -210,5 +210,7 @@ class T2277(RobovacModelDetails):
                 d = decode_analysis_response(raw_b64)
                 return str(d) if d else None
         except Exception as exc:
-            _LOGGER.warning("proto_decode failed for DPS %d value %r: %s", dps_code, raw_b64, exc)
+            _LOGGER.warning(
+                "proto_decode failed for DPS %d value %r: %s", dps_code, raw_b64, exc
+            )
         return None

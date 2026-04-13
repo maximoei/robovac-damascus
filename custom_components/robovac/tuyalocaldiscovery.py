@@ -39,12 +39,12 @@ def _decrypt_v35(data: bytes) -> str:
     _prefix, _ver, _reserved, _seq, _cmd, payload_size = struct.unpack_from(
         ">IBBIII", data
     )
-    iv = data[_HEADER_SIZE_35:_HEADER_SIZE_35 + 12]
+    iv = data[_HEADER_SIZE_35 : _HEADER_SIZE_35 + 12]
     # payload_size covers IV(12) + ciphertext + tag(16)
     ciphertext_len = payload_size - 12 - 16
     ct_start = _HEADER_SIZE_35 + 12
-    ciphertext = data[ct_start:ct_start + ciphertext_len]
-    tag = data[ct_start + ciphertext_len:ct_start + ciphertext_len + 16]
+    ciphertext = data[ct_start : ct_start + ciphertext_len]
+    tag = data[ct_start + ciphertext_len : ct_start + ciphertext_len + 16]
     # AAD = header bytes after prefix (14 bytes)
     aad = data[4:_HEADER_SIZE_35]
     plaintext = _AESGCM_UDP.decrypt(iv, ciphertext + tag, aad)

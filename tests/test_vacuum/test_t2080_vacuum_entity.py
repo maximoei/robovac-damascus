@@ -87,9 +87,13 @@ def mock_t2080_vacuum_data() -> RoboVac:
 
 
 @pytest.mark.asyncio
-async def test_t2080_activity_with_activity_mapping(mock_t2080_robovac, mock_t2080_vacuum_data) -> None:
+async def test_t2080_activity_with_activity_mapping(
+    mock_t2080_robovac, mock_t2080_vacuum_data
+) -> None:
     """Test T2080 activity property uses activity mapping when available."""
-    with patch("custom_components.robovac.vacuum.RoboVac", return_value=mock_t2080_robovac):
+    with patch(
+        "custom_components.robovac.vacuum.RoboVac", return_value=mock_t2080_robovac
+    ):
         entity = RoboVacEntity(mock_t2080_vacuum_data)
 
         # Test various T2080 states using activity mapping
@@ -113,13 +117,19 @@ async def test_t2080_activity_with_activity_mapping(mock_t2080_robovac, mock_t20
             entity._attr_error_code = 0  # No error
 
             result = entity.activity
-            assert result == expected_activity, f"Expected {expected_activity} for state '{state}', got {result}"
+            assert (
+                result == expected_activity
+            ), f"Expected {expected_activity} for state '{state}', got {result}"
 
 
 @pytest.mark.asyncio
-async def test_t2080_activity_with_error_overrides_mapping(mock_t2080_robovac, mock_t2080_vacuum_data) -> None:
+async def test_t2080_activity_with_error_overrides_mapping(
+    mock_t2080_robovac, mock_t2080_vacuum_data
+) -> None:
     """Test that error state overrides activity mapping."""
-    with patch("custom_components.robovac.vacuum.RoboVac", return_value=mock_t2080_robovac):
+    with patch(
+        "custom_components.robovac.vacuum.RoboVac", return_value=mock_t2080_robovac
+    ):
         entity = RoboVacEntity(mock_t2080_vacuum_data)
 
         # Set a cleaning state but with an error
@@ -131,9 +141,13 @@ async def test_t2080_activity_with_error_overrides_mapping(mock_t2080_robovac, m
 
 
 @pytest.mark.asyncio
-async def test_t2080_activity_with_none_state(mock_t2080_robovac, mock_t2080_vacuum_data) -> None:
+async def test_t2080_activity_with_none_state(
+    mock_t2080_robovac, mock_t2080_vacuum_data
+) -> None:
     """Test T2080 activity property returns None for None/0 state."""
-    with patch("custom_components.robovac.vacuum.RoboVac", return_value=mock_t2080_robovac):
+    with patch(
+        "custom_components.robovac.vacuum.RoboVac", return_value=mock_t2080_robovac
+    ):
         entity = RoboVacEntity(mock_t2080_vacuum_data)
 
         # Test None state
@@ -148,9 +162,13 @@ async def test_t2080_activity_with_none_state(mock_t2080_robovac, mock_t2080_vac
 
 
 @pytest.mark.asyncio
-async def test_t2080_activity_unknown_state_not_in_mapping(mock_t2080_robovac, mock_t2080_vacuum_data) -> None:
+async def test_t2080_activity_unknown_state_not_in_mapping(
+    mock_t2080_robovac, mock_t2080_vacuum_data
+) -> None:
     """Test T2080 activity property returns None for unknown states when activity mapping exists."""
-    with patch("custom_components.robovac.vacuum.RoboVac", return_value=mock_t2080_robovac):
+    with patch(
+        "custom_components.robovac.vacuum.RoboVac", return_value=mock_t2080_robovac
+    ):
         entity = RoboVacEntity(mock_t2080_vacuum_data)
 
         # Set an unknown state not in activity mapping
@@ -163,9 +181,13 @@ async def test_t2080_activity_unknown_state_not_in_mapping(mock_t2080_robovac, m
 
 
 @pytest.mark.asyncio
-async def test_t2080_update_state_uses_human_readable_values(mock_t2080_robovac, mock_t2080_vacuum_data) -> None:
+async def test_t2080_update_state_uses_human_readable_values(
+    mock_t2080_robovac, mock_t2080_vacuum_data
+) -> None:
     """Test that T2080 state updates use human-readable values."""
-    with patch("custom_components.robovac.vacuum.RoboVac", return_value=mock_t2080_robovac):
+    with patch(
+        "custom_components.robovac.vacuum.RoboVac", return_value=mock_t2080_robovac
+    ):
         entity = RoboVacEntity(mock_t2080_vacuum_data)
 
         # Mock tuyastatus with encoded values
@@ -193,7 +215,9 @@ async def test_t2080_update_state_uses_human_readable_values(mock_t2080_robovac,
 
         # Verify human-readable values are used
         assert entity._attr_tuya_state == "Paused"
-        assert entity._attr_error_code == "E001"  # Error codes might not be converted yet
+        assert (
+            entity._attr_error_code == "E001"
+        )  # Error codes might not be converted yet
 
         # Verify the activity mapping is used - ERROR takes precedence over PAUSED
         # when error_code exists
@@ -201,9 +225,13 @@ async def test_t2080_update_state_uses_human_readable_values(mock_t2080_robovac,
 
 
 @pytest.mark.asyncio
-async def test_t2080_initialization_sets_activity_mapping(mock_t2080_robovac, mock_t2080_vacuum_data) -> None:
+async def test_t2080_initialization_sets_activity_mapping(
+    mock_t2080_robovac, mock_t2080_vacuum_data
+) -> None:
     """Test that T2080 entity initialization sets activity mapping attribute."""
-    with patch("custom_components.robovac.vacuum.RoboVac", return_value=mock_t2080_robovac):
+    with patch(
+        "custom_components.robovac.vacuum.RoboVac", return_value=mock_t2080_robovac
+    ):
         entity = RoboVacEntity(mock_t2080_vacuum_data)
 
         # Verify activity mapping is set during initialization

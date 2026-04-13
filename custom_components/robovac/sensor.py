@@ -5,7 +5,13 @@ from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import PERCENTAGE, EntityCategory, CONF_NAME, CONF_ID, CONF_MODEL
+from homeassistant.const import (
+    PERCENTAGE,
+    EntityCategory,
+    CONF_NAME,
+    CONF_ID,
+    CONF_MODEL,
+)
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.device_registry import DeviceInfo
@@ -133,7 +139,10 @@ async def async_setup_entry(
 # Internal helpers
 # ---------------------------------------------------------------------------
 
-def _vacuum_and_status(hass: HomeAssistant, domain: str, conf_vacs: str, robovac_id: str) -> tuple[Any, Any]:
+
+def _vacuum_and_status(
+    hass: HomeAssistant, domain: str, conf_vacs: str, robovac_id: str
+) -> tuple[Any, Any]:
     """Return (vacuum_entity, tuyastatus) or (None, None) if vacuum not found."""
     vacuum_entity = hass.data[domain][conf_vacs].get(robovac_id)
     if not vacuum_entity:
@@ -165,13 +174,12 @@ class RobovacBatterySensor(SensorEntity):
     async def async_update(self) -> None:
         try:
             # Get the vacuum entity from hass data
-            vacuum_entity: RoboVacEntity | None = self.hass.data[DOMAIN][CONF_VACS].get(self.robovac_id)
+            vacuum_entity: RoboVacEntity | None = self.hass.data[DOMAIN][CONF_VACS].get(
+                self.robovac_id
+            )
 
             if not vacuum_entity:
-                _LOGGER.debug(
-                    "Vacuum entity not found for %s",
-                    self.robovac_id
-                )
+                _LOGGER.debug("Vacuum entity not found for %s", self.robovac_id)
                 self._attr_available = False
                 return
 
@@ -179,7 +187,7 @@ class RobovacBatterySensor(SensorEntity):
             if not vacuum_entity.tuyastatus:
                 _LOGGER.debug(
                     "No tuyastatus available yet for %s. Waiting for connection...",
-                    self.robovac_id
+                    self.robovac_id,
                 )
                 self._attr_available = False
                 return
@@ -199,43 +207,37 @@ class RobovacBatterySensor(SensorEntity):
                         "Battery for %s: %s%% (DPS code: %s)",
                         self.robovac_id,
                         self._attr_native_value,
-                        battery_dps_code
+                        battery_dps_code,
                     )
                 except (ValueError, TypeError) as ex:
                     _LOGGER.error(
                         "Invalid battery value %s for %s: %s",
                         battery_value,
                         self.robovac_id,
-                        ex
+                        ex,
                     )
                     self._attr_available = False
             else:
                 _LOGGER.debug(
                     "Battery DPS code %s not in tuyastatus. Available codes: %s",
                     battery_dps_code,
-                    list(vacuum_entity.tuyastatus.keys())
+                    list(vacuum_entity.tuyastatus.keys()),
                 )
                 self._attr_available = False
 
         except KeyError as ex:
-            _LOGGER.error(
-                "Missing key in hass data for %s: %s",
-                self.robovac_id,
-                ex
-            )
+            _LOGGER.error("Missing key in hass data for %s: %s", self.robovac_id, ex)
             self._attr_available = False
         except AttributeError as ex:
             _LOGGER.error(
-                "Attribute error accessing vacuum for %s: %s",
-                self.robovac_id,
-                ex
+                "Attribute error accessing vacuum for %s: %s", self.robovac_id, ex
             )
             self._attr_available = False
         except Exception as ex:
             _LOGGER.error(
                 "Unexpected error updating battery sensor for %s: %s",
                 self.robovac_id,
-                ex
+                ex,
             )
             self._attr_available = False
 
@@ -293,7 +295,9 @@ class RobovacErrorSensor(SensorEntity):
             self._attr_available = True
             self._has_had_data = True
         except Exception as ex:
-            _LOGGER.error("Failed to update error sensor for %s: %s", self.robovac_id, ex)
+            _LOGGER.error(
+                "Failed to update error sensor for %s: %s", self.robovac_id, ex
+            )
             self._attr_available = False
 
 
@@ -341,7 +345,9 @@ class RobovacNotificationSensor(SensorEntity):
             self._attr_available = True
             self._has_had_data = True
         except Exception as ex:
-            _LOGGER.error("Failed to update notification sensor for %s: %s", self.robovac_id, ex)
+            _LOGGER.error(
+                "Failed to update notification sensor for %s: %s", self.robovac_id, ex
+            )
             self._attr_available = False
 
 
@@ -402,7 +408,9 @@ class RobovacConsumableSensor(SensorEntity):
         except Exception as ex:
             _LOGGER.error(
                 "Failed to update consumable sensor %s for %s: %s",
-                self._key, self.robovac_id, ex,
+                self._key,
+                self.robovac_id,
+                ex,
             )
             self._attr_available = False
 
@@ -472,7 +480,9 @@ class RobovacCleanTypeSensor(SensorEntity):
             self._attr_available = True
             self._has_had_data = True
         except Exception as ex:
-            _LOGGER.error("Failed to update clean-type sensor for %s: %s", self.robovac_id, ex)
+            _LOGGER.error(
+                "Failed to update clean-type sensor for %s: %s", self.robovac_id, ex
+            )
             self._attr_available = False
 
 
@@ -543,7 +553,9 @@ class RobovacLastCleanRecordSensor(SensorEntity):
             self._has_had_data = True
         except Exception as ex:
             _LOGGER.error(
-                "Failed to update last-clean record sensor for %s: %s", self.robovac_id, ex
+                "Failed to update last-clean record sensor for %s: %s",
+                self.robovac_id,
+                ex,
             )
             self._attr_available = False
 
@@ -664,7 +676,9 @@ class RobovacLastCleanAreaSensor(SensorEntity):
             self._has_had_data = True
         except Exception as ex:
             _LOGGER.error(
-                "Failed to update last-clean area sensor for %s: %s", self.robovac_id, ex
+                "Failed to update last-clean area sensor for %s: %s",
+                self.robovac_id,
+                ex,
             )
             self._attr_available = False
 
@@ -724,7 +738,9 @@ class RobovacLastCleanDurationSensor(SensorEntity):
             self._has_had_data = True
         except Exception as ex:
             _LOGGER.error(
-                "Failed to update last-clean duration sensor for %s: %s", self.robovac_id, ex
+                "Failed to update last-clean duration sensor for %s: %s",
+                self.robovac_id,
+                ex,
             )
             self._attr_available = False
 
@@ -782,13 +798,21 @@ class RobovacFirmwareSensor(SensorEntity):
             self._attr_native_value = info.get("software")
             self._attr_extra_state_attributes = {
                 k: info[k]
-                for k in ("product_name", "device_mac", "hardware", "wifi_name", "wifi_ip")
+                for k in (
+                    "product_name",
+                    "device_mac",
+                    "hardware",
+                    "wifi_name",
+                    "wifi_ip",
+                )
                 if k in info
             }
             self._attr_available = True
             self._has_had_data = True
         except Exception as ex:
-            _LOGGER.error("Failed to update firmware sensor for %s: %s", self.robovac_id, ex)
+            _LOGGER.error(
+                "Failed to update firmware sensor for %s: %s", self.robovac_id, ex
+            )
             self._attr_available = False
 
 
@@ -900,7 +924,9 @@ class RobovacWifiSsidSensor(SensorEntity):
             self._attr_available = True
             self._has_had_data = True
         except Exception as ex:
-            _LOGGER.error("Failed to update WiFi SSID sensor for %s: %s", self.robovac_id, ex)
+            _LOGGER.error(
+                "Failed to update WiFi SSID sensor for %s: %s", self.robovac_id, ex
+            )
             self._attr_available = False
 
 
@@ -991,7 +1017,9 @@ class RobovacMultiMapSensor(SensorEntity):
             self._attr_available = True
             self._has_had_data = True
         except Exception as ex:
-            _LOGGER.error("Failed to update multi-map sensor for %s: %s", self.robovac_id, ex)
+            _LOGGER.error(
+                "Failed to update multi-map sensor for %s: %s", self.robovac_id, ex
+            )
             self._attr_available = False
 
 
@@ -1041,7 +1069,9 @@ class RobovacCustomCleanModeSensor(SensorEntity):
             self._has_had_data = True
         except Exception as ex:
             _LOGGER.error(
-                "Failed to update custom-clean-mode sensor for %s: %s", self.robovac_id, ex
+                "Failed to update custom-clean-mode sensor for %s: %s",
+                self.robovac_id,
+                ex,
             )
             self._attr_available = False
 
@@ -1089,7 +1119,9 @@ class RobovacMapValidSensor(SensorEntity):
             self._attr_available = True
             self._has_had_data = True
         except Exception as ex:
-            _LOGGER.error("Failed to update map-valid sensor for %s: %s", self.robovac_id, ex)
+            _LOGGER.error(
+                "Failed to update map-valid sensor for %s: %s", self.robovac_id, ex
+            )
             self._attr_available = False
 
 

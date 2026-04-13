@@ -46,7 +46,12 @@ class TestCountriesRegion:
         """Test getting phone code for EU region."""
         phone_code = get_phone_code_by_region("EU")
         # First matching country for EU region
-        assert phone_code in ["93", "355", "213", "244"]  # Multiple countries with EU region
+        assert phone_code in [
+            "93",
+            "355",
+            "213",
+            "244",
+        ]  # Multiple countries with EU region
 
     def test_get_phone_code_by_region_az(self) -> None:
         """Test getting phone code for AZ region."""

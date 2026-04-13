@@ -39,7 +39,7 @@ async def test_l60_start_command_uses_correct_dps_value() -> None:
         "MODE": "152",
         "STATUS": "153",
         "BATTERY_LEVEL": "163",
-        "ERROR_CODE": "177"
+        "ERROR_CODE": "177",
     }
     # Mock getRoboVacCommandValue to return base64 for MODE, passthrough for others
 
@@ -47,6 +47,7 @@ async def test_l60_start_command_uses_correct_dps_value() -> None:
         if command_name == RobovacCommand.MODE:
             return "BBoCCAE="
         return value
+
     mock_robovac.getRoboVacCommandValue.side_effect = l60_command_value
     # Make async_set an AsyncMock so it can be awaited
     mock_robovac.async_set = AsyncMock()

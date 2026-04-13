@@ -12,7 +12,6 @@ from custom_components.robovac.tuyalocalapi import (
     MAGIC_SUFFIX,
 )
 
-
 # Protocol 3.5 magic constants
 MAGIC_PREFIX_35 = 0x00006699
 MAGIC_SUFFIX_35 = 0x00009966
@@ -24,19 +23,22 @@ class TestProtocol35MessageConstants:
     def test_magic_prefix_35_constant_exists(self) -> None:
         """Protocol 3.5 should have a distinct magic prefix constant."""
         from custom_components.robovac import tuyalocalapi
-        assert hasattr(tuyalocalapi, 'MAGIC_PREFIX_35')
+
+        assert hasattr(tuyalocalapi, "MAGIC_PREFIX_35")
         assert tuyalocalapi.MAGIC_PREFIX_35 == 0x00006699
 
     def test_magic_suffix_35_constant_exists(self) -> None:
         """Protocol 3.5 should have a distinct magic suffix constant."""
         from custom_components.robovac import tuyalocalapi
-        assert hasattr(tuyalocalapi, 'MAGIC_SUFFIX_35')
+
+        assert hasattr(tuyalocalapi, "MAGIC_SUFFIX_35")
         assert tuyalocalapi.MAGIC_SUFFIX_35 == 0x00009966
 
     def test_message_prefix_format_35_exists(self) -> None:
         """Protocol 3.5 should have a message prefix format constant."""
         from custom_components.robovac import tuyalocalapi
-        assert hasattr(tuyalocalapi, 'MESSAGE_PREFIX_FORMAT_35')
+
+        assert hasattr(tuyalocalapi, "MESSAGE_PREFIX_FORMAT_35")
 
 
 class TestProtocol35MessageFormat:
@@ -99,7 +101,7 @@ class TestProtocol35MessageFormat:
         # Header is: prefix(4) + version(1) + reserved(1) + seq(4) + cmd(4) + len(4) = 18 bytes
         # IV should be next 12 bytes
         header_size = 18
-        iv = msg_bytes[header_size:header_size + 12]
+        iv = msg_bytes[header_size : header_size + 12]
         assert len(iv) == 12
 
     def test_v35_message_contains_16_byte_tag(self, cipher_v35: TuyaCipher) -> None:
@@ -147,9 +149,7 @@ class TestProtocol35MessageParsing:
         """Create a Protocol 3.5 cipher instance."""
         return TuyaCipher("abcdefghijklmnop", (3, 5))
 
-    def test_v35_from_bytes_detects_6699_prefix(
-        self, cipher_v35: TuyaCipher
-    ) -> None:
+    def test_v35_from_bytes_detects_6699_prefix(self, cipher_v35: TuyaCipher) -> None:
         """Message.from_bytes should detect Protocol 3.5 by 0x6699 prefix."""
         mock_device = MagicMock()
         mock_device.version = (3, 5)
@@ -169,9 +169,7 @@ class TestProtocol35MessageParsing:
         parsed = Message.from_bytes(mock_device, msg_bytes, cipher_v35)
         assert parsed.command == Message.GET_COMMAND
 
-    def test_v35_from_bytes_decrypts_payload(
-        self, cipher_v35: TuyaCipher
-    ) -> None:
+    def test_v35_from_bytes_decrypts_payload(self, cipher_v35: TuyaCipher) -> None:
         """Message.from_bytes should correctly decrypt Protocol 3.5 payload."""
         mock_device = MagicMock()
         mock_device.version = (3, 5)
@@ -191,9 +189,7 @@ class TestProtocol35MessageParsing:
         parsed = Message.from_bytes(mock_device, msg_bytes, cipher_v35)
         assert parsed.payload == original_payload
 
-    def test_v35_from_bytes_validates_gcm_tag(
-        self, cipher_v35: TuyaCipher
-    ) -> None:
+    def test_v35_from_bytes_validates_gcm_tag(self, cipher_v35: TuyaCipher) -> None:
         """Message.from_bytes should fail if GCM tag is invalid."""
         mock_device = MagicMock()
         mock_device.version = (3, 5)
@@ -212,5 +208,6 @@ class TestProtocol35MessageParsing:
         msg_bytes[-20] ^= 0xFF
 
         from custom_components.robovac.tuyalocalapi import InvalidMessage
+
         with pytest.raises(InvalidMessage):
             Message.from_bytes(mock_device, bytes(msg_bytes), cipher_v35)

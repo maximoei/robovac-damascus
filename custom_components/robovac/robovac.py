@@ -27,6 +27,7 @@ class RoboVac(TuyaDevice):
         model_details: Model-specific configuration and feature mappings
         model_code: The specific model identifier (e.g., "T2080", "L60")
     """
+
     model_details: type[RobovacModelDetails]
 
     def __init__(self, model_code: str, *args: Any, **kwargs: Any):
@@ -42,9 +43,7 @@ class RoboVac(TuyaDevice):
         """
         # Determine model_details first
         if model_code not in ROBOVAC_MODELS:
-            raise ModelNotSupportedException(
-                f"Model {model_code} is not supported"
-            )
+            raise ModelNotSupportedException(f"Model {model_code} is not supported")
         current_model_details = ROBOVAC_MODELS[model_code]
 
         # Determine protocol version: prefer model-defined, else default to (3, 3)
@@ -72,8 +71,12 @@ class RoboVac(TuyaDevice):
 
         # Only honor protocol_version if explicitly set on the model class.
         # Using __dict__ avoids inheriting the Protocol's typed default (3.1).
-        model_version: Any = current_model_details.__dict__.get("protocol_version", None)
-        coerced_version = _coerce_version(model_version) if model_version is not None else (3, 3)
+        model_version: Any = current_model_details.__dict__.get(
+            "protocol_version", None
+        )
+        coerced_version = (
+            _coerce_version(model_version) if model_version is not None else (3, 3)
+        )
         if "version" not in kwargs:
             kwargs["version"] = coerced_version
 
@@ -191,7 +194,7 @@ class RoboVac(TuyaDevice):
         for key, value in self.model_details.commands.items():
             # Get the DPS name from the mapping, or use the command name if not in mapping
             # Handle both RobovacCommand enum keys and string keys
-            key_name = key.name if hasattr(key, 'name') else str(key)
+            key_name = key.name if hasattr(key, "name") else str(key)
             dps_name = command_to_dps.get(key_name, key_name)
 
             # Extract code value based on whether it's a direct value or in a dictionary
@@ -208,7 +211,9 @@ class RoboVac(TuyaDevice):
         self._dps_codes_cache = codes
         return codes
 
-    def getRoboVacCommandValue(self, command_name: RobovacCommand, value: str) -> str | bool:
+    def getRoboVacCommandValue(
+        self, command_name: RobovacCommand, value: str
+    ) -> str | bool:
         """Convert human-readable command value to model-specific device value.
 
         Translates user-friendly command values to the actual values that need to be
@@ -225,7 +230,11 @@ class RoboVac(TuyaDevice):
         """
         try:
             # Check if command_name is already a RobovacCommand enum
-            cmd = command_name if isinstance(command_name, RobovacCommand) else RobovacCommand(command_name)
+            cmd = (
+                command_name
+                if isinstance(command_name, RobovacCommand)
+                else RobovacCommand(command_name)
+            )
             values = self._get_command_values(cmd)
 
             if values is not None and value in values:
@@ -239,7 +248,9 @@ class RoboVac(TuyaDevice):
 
         return value
 
-    def getRoboVacHumanReadableValue(self, command_name: RobovacCommand, value: str) -> str:
+    def getRoboVacHumanReadableValue(
+        self, command_name: RobovacCommand, value: str
+    ) -> str:
         """Convert model-specific device value to human-readable command value.
 
         Translates device-specific values received from the vacuum via Tuya protocol
@@ -256,10 +267,14 @@ class RoboVac(TuyaDevice):
         values = None
         try:
             # Check if command_name is already a RobovacCommand enum
-            cmd = command_name if isinstance(command_name, RobovacCommand) else RobovacCommand(command_name)
+            cmd = (
+                command_name
+                if isinstance(command_name, RobovacCommand)
+                else RobovacCommand(command_name)
+            )
 
             # Try model-specific protobuf decode first
-            if hasattr(self.model_details, 'decode_dps'):
+            if hasattr(self.model_details, "decode_dps"):
                 cmd_entry = self.model_details.commands.get(cmd)
                 if isinstance(cmd_entry, dict) and "code" in cmd_entry:
                     dps_code = cmd_entry["code"]

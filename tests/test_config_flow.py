@@ -99,7 +99,9 @@ async def test_user_form(hass: HomeAssistant) -> None:
 
 
 @pytest.mark.asyncio
-async def test_user_form_cannot_connect(hass: HomeAssistant, mock_eufy_response) -> None:
+async def test_user_form_cannot_connect(
+    hass: HomeAssistant, mock_eufy_response
+) -> None:
     """Test we handle cannot connect error."""
     # Mock the EufyLogon.get_user_info to return a 400 status code
     mock_eufy_response["user_info"].status_code = 400
@@ -247,7 +249,11 @@ async def test_options_flow_init(hass: HomeAssistant) -> None:
 
     # Initialize the options flow
     flow = OptionsFlowHandler(config_entry)
-    with patch.object(type(flow), 'config_entry', new_callable=lambda: property(lambda self: self._config_entry)):
+    with patch.object(
+        type(flow),
+        "config_entry",
+        new_callable=lambda: property(lambda self: self._config_entry),
+    ):
         result = await flow.async_step_init()
 
     assert result["type"] == data_entry_flow.FlowResultType.FORM
@@ -278,7 +284,11 @@ async def test_options_flow_edit(hass: HomeAssistant) -> None:
     flow.selected_vacuum = "test_device_id"
 
     # Test the edit step
-    with patch.object(type(flow), 'config_entry', new_callable=lambda: property(lambda self: self._config_entry)):
+    with patch.object(
+        type(flow),
+        "config_entry",
+        new_callable=lambda: property(lambda self: self._config_entry),
+    ):
         result = await flow.async_step_edit()
 
     assert result["type"] == data_entry_flow.FlowResultType.FORM
@@ -330,7 +340,11 @@ async def test_options_flow_edit_submit(hass: HomeAssistant) -> None:
     flow._update_data = MagicMock(return_value=updated_data)
 
     # Test the edit step submission
-    with patch.object(type(flow), 'config_entry', new_callable=lambda: property(lambda self: self._config_entry)):
+    with patch.object(
+        type(flow),
+        "config_entry",
+        new_callable=lambda: property(lambda self: self._config_entry),
+    ):
         result = await flow.async_step_edit(
             {
                 CONF_AUTODISCOVERY: False,

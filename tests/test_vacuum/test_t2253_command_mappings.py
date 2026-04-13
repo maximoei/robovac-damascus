@@ -11,7 +11,9 @@ from custom_components.robovac.vacuums.base import RobovacCommand
 @pytest.fixture
 def mock_t2253_robovac() -> RoboVac:
     """Create a mock T2253 RoboVac instance for testing."""
-    with patch("custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None):
+    with patch(
+        "custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None
+    ):
         robovac = RoboVac(
             model_code="T2253",
             device_id="test_id",
@@ -23,36 +25,78 @@ def mock_t2253_robovac() -> RoboVac:
 
 def test_t2253_mode_command_values(mock_t2253_robovac) -> None:
     """Test T2253 MODE command value mappings."""
-    assert mock_t2253_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "auto") == "Auto"
-    assert mock_t2253_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "small_room") == "SmallRoom"
-    assert mock_t2253_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "spot") == "Spot"
-    assert mock_t2253_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "edge") == "Edge"
-    assert mock_t2253_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "nosweep") == "Nosweep"
+    assert (
+        mock_t2253_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "auto") == "Auto"
+    )
+    assert (
+        mock_t2253_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "small_room")
+        == "SmallRoom"
+    )
+    assert (
+        mock_t2253_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "spot") == "Spot"
+    )
+    assert (
+        mock_t2253_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "edge") == "Edge"
+    )
+    assert (
+        mock_t2253_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "nosweep")
+        == "Nosweep"
+    )
 
     # Unknown returns as-is
-    assert mock_t2253_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "unknown") == "unknown"
+    assert (
+        mock_t2253_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "unknown")
+        == "unknown"
+    )
 
 
 def test_t2253_mode_case_insensitive(mock_t2253_robovac) -> None:
     """Test T2253 MODE command accepts case-insensitive values via getRoboVacHumanReadableValue."""
     # Case-insensitive matching should work for device responses
-    assert mock_t2253_robovac.getRoboVacHumanReadableValue(RobovacCommand.MODE, "auto") == "Auto"
-    assert mock_t2253_robovac.getRoboVacHumanReadableValue(RobovacCommand.MODE, "Auto") == "Auto"
-    assert mock_t2253_robovac.getRoboVacHumanReadableValue(RobovacCommand.MODE, "AUTO") == "Auto"
+    assert (
+        mock_t2253_robovac.getRoboVacHumanReadableValue(RobovacCommand.MODE, "auto")
+        == "Auto"
+    )
+    assert (
+        mock_t2253_robovac.getRoboVacHumanReadableValue(RobovacCommand.MODE, "Auto")
+        == "Auto"
+    )
+    assert (
+        mock_t2253_robovac.getRoboVacHumanReadableValue(RobovacCommand.MODE, "AUTO")
+        == "Auto"
+    )
 
 
 def test_t2253_fan_speed_command_values(mock_t2253_robovac) -> None:
     """Test T2253 FAN_SPEED value mapping."""
-    assert mock_t2253_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "standard") == "Standard"
-    assert mock_t2253_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "turbo") == "Turbo"
-    assert mock_t2253_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "max") == "Max"
-    assert mock_t2253_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "boost_iq") == "Boost_IQ"
-    assert mock_t2253_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "unknown") == "unknown"
+    assert (
+        mock_t2253_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "standard")
+        == "Standard"
+    )
+    assert (
+        mock_t2253_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "turbo")
+        == "Turbo"
+    )
+    assert (
+        mock_t2253_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "max")
+        == "Max"
+    )
+    assert (
+        mock_t2253_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "boost_iq")
+        == "Boost_IQ"
+    )
+    assert (
+        mock_t2253_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "unknown")
+        == "unknown"
+    )
 
 
 def test_t2253_error_code_mapping(mock_t2253_robovac) -> None:
     """Test T2253 error code 0 maps to 'No error'."""
-    assert mock_t2253_robovac.getRoboVacHumanReadableValue(RobovacCommand.ERROR, "0") == "No error"
+    assert (
+        mock_t2253_robovac.getRoboVacHumanReadableValue(RobovacCommand.ERROR, "0")
+        == "No error"
+    )
 
 
 def test_t2253_model_has_commands(mock_t2253_robovac) -> None:

@@ -1,5 +1,6 @@
 """eufy Clean L60 Hybrid SES (T2278)"""
-from homeassistant.components.vacuum import (VacuumEntityFeature, VacuumActivity)
+
+from homeassistant.components.vacuum import VacuumEntityFeature, VacuumActivity
 from .base import RoboVacEntityFeature, RobovacCommand, RobovacModelDetails
 
 
@@ -39,7 +40,7 @@ class T2278(RobovacModelDetails):
                 "AggN": "pause",
                 "AggG": "stop",
                 "BBoCCAE=": "auto",
-                "AggO": "nosweep"
+                "AggO": "nosweep",
             },
         },
         RobovacCommand.START_PAUSE: {  # via mode command
@@ -74,7 +75,6 @@ class T2278(RobovacModelDetails):
                 "CgoCCAIQBTICCAE=": "Zone Paused",
             },
         },
-
         RobovacCommand.FAN_SPEED: {
             "code": 158,
             "values": {
@@ -84,12 +84,11 @@ class T2278(RobovacModelDetails):
                 "max": "Max",
             },
         },
-
         RobovacCommand.LOCATE: {
             "code": 160,
             "values": {
                 "locate": "true",
-            }
+            },
         },
         RobovacCommand.BATTERY: {
             "code": 163,

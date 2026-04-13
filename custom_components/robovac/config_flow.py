@@ -227,7 +227,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):  # type: ignore[call
 
     @staticmethod
     @callback
-    def async_get_options_flow(config_entry: config_entries.ConfigEntry) -> OptionsFlowHandler:
+    def async_get_options_flow(
+        config_entry: config_entries.ConfigEntry,
+    ) -> OptionsFlowHandler:
         """Get the options flow for this handler."""
         return OptionsFlowHandler(config_entry)
 
@@ -247,7 +249,9 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         self._config_entry = config_entry
         self.selected_vacuum = None
 
-    async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+    async def async_step_init(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
         """Handle the initial step."""
         errors: dict[str, str] = {}
 
@@ -268,7 +272,9 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             step_id="init", data_schema=devices_schema, errors=errors
         )  # type: ignore[return-value]
 
-    async def async_step_edit(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+    async def async_step_edit(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
         """Handle the edit step."""
         errors: dict[str, str] = {}
 

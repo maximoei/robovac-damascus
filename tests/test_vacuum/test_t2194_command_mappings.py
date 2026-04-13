@@ -10,7 +10,9 @@ from custom_components.robovac.vacuums.base import RobovacCommand
 @pytest.fixture
 def mock_t2194_robovac() -> RoboVac:
     """Create a mock T2194 RoboVac instance for testing."""
-    with patch("custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None):
+    with patch(
+        "custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None
+    ):
         robovac = RoboVac(
             model_code="T2194",
             device_id="test_id",
@@ -26,8 +28,14 @@ def test_t2194_start_pause_values(mock_t2194_robovac) -> None:
     GH-309: L35 Hybrid only spot cleans when start command sent. The vacuum
     needs START_PAUSE boolean toggle along with MODE to start correctly.
     """
-    assert mock_t2194_robovac.getRoboVacCommandValue(RobovacCommand.START_PAUSE, "start") is True
-    assert mock_t2194_robovac.getRoboVacCommandValue(RobovacCommand.START_PAUSE, "pause") is False
+    assert (
+        mock_t2194_robovac.getRoboVacCommandValue(RobovacCommand.START_PAUSE, "start")
+        is True
+    )
+    assert (
+        mock_t2194_robovac.getRoboVacCommandValue(RobovacCommand.START_PAUSE, "pause")
+        is False
+    )
 
 
 def test_t2194_status_human_readable(mock_t2194_robovac) -> None:
@@ -36,12 +44,42 @@ def test_t2194_status_human_readable(mock_t2194_robovac) -> None:
     GH-309: Device reports 'completed' and 'Charging' statuses that were
     missing from the values dict.
     """
-    assert mock_t2194_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "Running") == "Running"
-    assert mock_t2194_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "completed") == "Completed"
-    assert mock_t2194_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "Charging") == "Charging"
-    assert mock_t2194_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "standby") == "Standby"
-    assert mock_t2194_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "Sleeping") == "Sleeping"
-    assert mock_t2194_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "recharge_needed") == "Recharge needed"
+    assert (
+        mock_t2194_robovac.getRoboVacHumanReadableValue(
+            RobovacCommand.STATUS, "Running"
+        )
+        == "Running"
+    )
+    assert (
+        mock_t2194_robovac.getRoboVacHumanReadableValue(
+            RobovacCommand.STATUS, "completed"
+        )
+        == "Completed"
+    )
+    assert (
+        mock_t2194_robovac.getRoboVacHumanReadableValue(
+            RobovacCommand.STATUS, "Charging"
+        )
+        == "Charging"
+    )
+    assert (
+        mock_t2194_robovac.getRoboVacHumanReadableValue(
+            RobovacCommand.STATUS, "standby"
+        )
+        == "Standby"
+    )
+    assert (
+        mock_t2194_robovac.getRoboVacHumanReadableValue(
+            RobovacCommand.STATUS, "Sleeping"
+        )
+        == "Sleeping"
+    )
+    assert (
+        mock_t2194_robovac.getRoboVacHumanReadableValue(
+            RobovacCommand.STATUS, "recharge_needed"
+        )
+        == "Recharge needed"
+    )
 
 
 def test_t2194_fan_speed_dps_code(mock_t2194_robovac) -> None:
@@ -56,17 +94,35 @@ def test_t2194_fan_speed_dps_code(mock_t2194_robovac) -> None:
 
 def test_t2194_fan_speed_command_values(mock_t2194_robovac) -> None:
     """Test T2194 FAN_SPEED value mapping."""
-    assert mock_t2194_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "quiet") == "Quiet"
-    assert mock_t2194_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "standard") == "Standard"
-    assert mock_t2194_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "turbo") == "Turbo"
-    assert mock_t2194_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "max") == "Max"
+    assert (
+        mock_t2194_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "quiet")
+        == "Quiet"
+    )
+    assert (
+        mock_t2194_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "standard")
+        == "Standard"
+    )
+    assert (
+        mock_t2194_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "turbo")
+        == "Turbo"
+    )
+    assert (
+        mock_t2194_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "max")
+        == "Max"
+    )
 
 
 def test_t2194_mode_command_values(mock_t2194_robovac) -> None:
     """Test T2194 MODE command value mappings."""
-    assert mock_t2194_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "auto") == "Auto"
-    assert mock_t2194_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "spot") == "Spot"
-    assert mock_t2194_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "edge") == "Edge"
+    assert (
+        mock_t2194_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "auto") == "Auto"
+    )
+    assert (
+        mock_t2194_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "spot") == "Spot"
+    )
+    assert (
+        mock_t2194_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "edge") == "Edge"
+    )
 
 
 def test_t2194_model_has_commands(mock_t2194_robovac) -> None:

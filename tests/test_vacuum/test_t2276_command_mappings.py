@@ -15,7 +15,9 @@ from custom_components.robovac.vacuums.base import RobovacCommand
 @pytest.fixture
 def mock_t2276_robovac() -> RoboVac:
     """Create a mock T2276 RoboVac instance for testing."""
-    with patch("custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None):
+    with patch(
+        "custom_components.robovac.robovac.TuyaDevice.__init__", return_value=None
+    ):
         robovac = RoboVac(
             model_code="T2276",
             device_id="test_id",
@@ -48,37 +50,76 @@ def test_t2276_mode_command_values(mock_t2276_robovac) -> None:
     Note: T2276 uses lowercase "auto" unlike T2128's "Auto",
     confirmed via local protocol 3.5 packet capture.
     """
-    assert mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "auto") == "auto"
-    assert mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "small_room") == "SmallRoom"
-    assert mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "spot") == "Spot"
-    assert mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "edge") == "Edge"
-    assert mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "nosweep") == "Nosweep"
+    assert (
+        mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "auto") == "auto"
+    )
+    assert (
+        mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "small_room")
+        == "SmallRoom"
+    )
+    assert (
+        mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "spot") == "Spot"
+    )
+    assert (
+        mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "edge") == "Edge"
+    )
+    assert (
+        mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "nosweep")
+        == "Nosweep"
+    )
 
     # Unknown returns as-is
-    assert mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "unknown") == "unknown"
+    assert (
+        mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.MODE, "unknown")
+        == "unknown"
+    )
 
 
 def test_t2276_start_pause_command_values(mock_t2276_robovac) -> None:
     """Test T2276 START_PAUSE value mapping (boolean DPS 2)."""
-    assert mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.START_PAUSE, "start") is True
-    assert mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.START_PAUSE, "pause") is False
+    assert (
+        mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.START_PAUSE, "start")
+        is True
+    )
+    assert (
+        mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.START_PAUSE, "pause")
+        is False
+    )
 
 
 def test_t2276_return_home_command_values(mock_t2276_robovac) -> None:
     """Test T2276 RETURN_HOME value mapping (boolean DPS 101)."""
     # DPS 101 is a boolean trigger — "return" maps to True
-    assert mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.RETURN_HOME, "return") is True
+    assert (
+        mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.RETURN_HOME, "return")
+        is True
+    )
 
 
 def test_t2276_fan_speed_command_values(mock_t2276_robovac) -> None:
     """Test T2276 FAN_SPEED value mapping."""
-    assert mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "pure") == "Quiet"
-    assert mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "standard") == "Standard"
-    assert mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "turbo") == "Turbo"
-    assert mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "boost") == "Boost"
+    assert (
+        mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "pure")
+        == "Quiet"
+    )
+    assert (
+        mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "standard")
+        == "Standard"
+    )
+    assert (
+        mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "turbo")
+        == "Turbo"
+    )
+    assert (
+        mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "boost")
+        == "Boost"
+    )
 
     # Unknown returns as-is
-    assert mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "unknown") == "unknown"
+    assert (
+        mock_t2276_robovac.getRoboVacCommandValue(RobovacCommand.FAN_SPEED, "unknown")
+        == "unknown"
+    )
 
 
 def test_t2276_command_codes(mock_t2276_robovac) -> None:

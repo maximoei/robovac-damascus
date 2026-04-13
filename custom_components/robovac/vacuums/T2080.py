@@ -1,5 +1,6 @@
 """RoboVac S1 Pro (T2080A)"""
-from homeassistant.components.vacuum import (VacuumEntityFeature, VacuumActivity)
+
+from homeassistant.components.vacuum import VacuumEntityFeature, VacuumActivity
 from .base import RoboVacEntityFeature, RobovacCommand, RobovacModelDetails
 
 
@@ -30,7 +31,6 @@ class T2080(RobovacModelDetails):
     commands = {
         # Received updated state bf7ef4e5de08b0b99an7pf (192.168.1.105:6668):
         # {'2': False, '5': 'smart', '6': 0, '7': 0, '8': 100, '9': 'normal', '10': 'low', '40': 'installed', '156': True, '158': 'Standard', '159': True, '161': 24, '163': 100}
-
         RobovacCommand.START_PAUSE: {
             "code": 2,
             # I've seen `'2': False` when ending a session (maybe when paused??)
@@ -92,12 +92,12 @@ class T2080(RobovacModelDetails):
                 "DAoCCAEQBzICCAFCAA==": "Temporary Return",  # This was when mid-clean, it needed to return to base to empty dust
                 "DQoCCAEQCTICCAH6AQA=": "Remove Dust Mid-Clean",
                 "CAoAEAIyAggB": "Error",
-            }
+            },
         },
         RobovacCommand.RETURN_HOME: {
             # Pretty sure this is correct, but untested
             "code": 152,
-            "values": ["AggB"]
+            "values": ["AggB"],
         },
         RobovacCommand.LOCATE: {
             "code": 103,
@@ -112,7 +112,7 @@ class T2080(RobovacModelDetails):
                 "quiet": "Quiet",
                 "standard": "Standard",
                 "turbo": "Turbo",
-                "max": "Max"
+                "max": "Max",
             },
         },
         RobovacCommand.MOP_LEVEL: {
@@ -123,7 +123,7 @@ class T2080(RobovacModelDetails):
                 "low": "low",
                 "middle": "middle",
                 "normal": "normal",
-                "strong": "strong"
+                "strong": "strong",
             },
         },
         RobovacCommand.BATTERY: {
@@ -142,7 +142,7 @@ class T2080(RobovacModelDetails):
         RobovacCommand.CLEANING_AREA: {
             # Verified
             "code": 7,
-        }
+        },
     }
     activity_mapping = {
         "Paused": VacuumActivity.PAUSED,

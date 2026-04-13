@@ -23,12 +23,12 @@ class TestProtocol35Cipher:
 
     def test_v35_uses_gcm_mode(self, cipher_v35: TuyaCipher) -> None:
         """Protocol 3.5 should use GCM mode, not ECB."""
-        assert hasattr(cipher_v35, 'is_gcm_mode')
+        assert hasattr(cipher_v35, "is_gcm_mode")
         assert cipher_v35.is_gcm_mode is True
 
     def test_v34_uses_ecb_mode(self, cipher_v34: TuyaCipher) -> None:
         """Protocol 3.4 should use ECB mode."""
-        assert hasattr(cipher_v34, 'is_gcm_mode')
+        assert hasattr(cipher_v34, "is_gcm_mode")
         assert cipher_v34.is_gcm_mode is False
 
     def test_v35_encrypt_returns_iv_ciphertext_tag(
@@ -46,12 +46,10 @@ class TestProtocol35Cipher:
         assert len(tag) == 16  # 128-bit GCM tag
         assert len(ciphertext) > 0
 
-    def test_v35_encrypt_no_padding_required(
-        self, cipher_v35: TuyaCipher
-    ) -> None:
+    def test_v35_encrypt_no_padding_required(self, cipher_v35: TuyaCipher) -> None:
         """Protocol 3.5 GCM mode does not require padding."""
         # 17 bytes - not a multiple of 16
-        plaintext = b'12345678901234567'
+        plaintext = b"12345678901234567"
         iv, ciphertext, tag = cipher_v35.encrypt_gcm(plaintext)
 
         # GCM ciphertext length equals plaintext length (no padding)
@@ -65,9 +63,7 @@ class TestProtocol35Cipher:
         decrypted = cipher_v35.decrypt_gcm(iv, ciphertext, tag)
         assert decrypted == plaintext
 
-    def test_v35_decrypt_with_invalid_tag_raises(
-        self, cipher_v35: TuyaCipher
-    ) -> None:
+    def test_v35_decrypt_with_invalid_tag_raises(self, cipher_v35: TuyaCipher) -> None:
         """Protocol 3.5 decrypt should raise on invalid GCM tag."""
         plaintext = b'{"dps":{"1":true}}'
         iv, ciphertext, tag = cipher_v35.encrypt_gcm(plaintext)
@@ -94,7 +90,7 @@ class TestProtocol35Cipher:
     def test_v35_encrypt_with_aad(self, cipher_v35: TuyaCipher) -> None:
         """Protocol 3.5 encrypt should support additional authenticated data."""
         plaintext = b'{"dps":{"1":true}}'
-        aad = b'\x00\x00\x66\x99\x00\x00\x00\x00\x00\x01'  # Header bytes
+        aad = b"\x00\x00\x66\x99\x00\x00\x00\x00\x00\x01"  # Header bytes
 
         iv, ciphertext, tag = cipher_v35.encrypt_gcm(plaintext, aad=aad)
 
@@ -102,23 +98,19 @@ class TestProtocol35Cipher:
         decrypted = cipher_v35.decrypt_gcm(iv, ciphertext, tag, aad=aad)
         assert decrypted == plaintext
 
-    def test_v35_decrypt_with_wrong_aad_raises(
-        self, cipher_v35: TuyaCipher
-    ) -> None:
+    def test_v35_decrypt_with_wrong_aad_raises(self, cipher_v35: TuyaCipher) -> None:
         """Protocol 3.5 decrypt should fail if AAD doesn't match."""
         plaintext = b'{"dps":{"1":true}}'
-        aad = b'\x00\x00\x66\x99\x00\x00\x00\x00\x00\x01'
+        aad = b"\x00\x00\x66\x99\x00\x00\x00\x00\x00\x01"
 
         iv, ciphertext, tag = cipher_v35.encrypt_gcm(plaintext, aad=aad)
 
         # Decrypt with different AAD should fail
-        wrong_aad = b'\x00\x00\x66\x99\x00\x00\x00\x00\x00\x02'
+        wrong_aad = b"\x00\x00\x66\x99\x00\x00\x00\x00\x00\x02"
         with pytest.raises(Exception):
             cipher_v35.decrypt_gcm(iv, ciphertext, tag, aad=wrong_aad)
 
-    def test_v35_generate_iv_returns_12_bytes(
-        self, cipher_v35: TuyaCipher
-    ) -> None:
+    def test_v35_generate_iv_returns_12_bytes(self, cipher_v35: TuyaCipher) -> None:
         """Protocol 3.5 IV generator should return 12 random bytes."""
         iv = cipher_v35.generate_iv()
         assert len(iv) == 12

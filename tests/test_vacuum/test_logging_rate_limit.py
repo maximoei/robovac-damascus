@@ -10,7 +10,9 @@ from custom_components.robovac.vacuum import RoboVacEntity
 
 
 @pytest.mark.asyncio
-async def test_no_data_warning_logged_once(mock_robovac, mock_vacuum_data: Any, caplog) -> None:
+async def test_no_data_warning_logged_once(
+    mock_robovac, mock_vacuum_data: Any, caplog
+) -> None:
     """Test that no data warning is logged only once initially."""
     # Arrange
     mock_robovac._dps = None
@@ -25,7 +27,8 @@ async def test_no_data_warning_logged_once(mock_robovac, mock_vacuum_data: Any, 
 
         # Assert - warning should appear only once
         warning_count = sum(
-            1 for record in caplog.records
+            1
+            for record in caplog.records
             if record.levelname == "WARNING"
             and "no data points available" in record.message
         )
@@ -33,7 +36,9 @@ async def test_no_data_warning_logged_once(mock_robovac, mock_vacuum_data: Any, 
 
 
 @pytest.mark.asyncio
-async def test_no_data_warning_logged_after_threshold(mock_robovac, mock_vacuum_data: Any, caplog) -> None:
+async def test_no_data_warning_logged_after_threshold(
+    mock_robovac, mock_vacuum_data: Any, caplog
+) -> None:
     """Test that no data warning is logged again after 5 minute threshold."""
     # Arrange
     mock_robovac._dps = None
@@ -44,7 +49,8 @@ async def test_no_data_warning_logged_after_threshold(mock_robovac, mock_vacuum_
         # Act - first call logs warning
         entity.update_entity_values()
         initial_warning_count = sum(
-            1 for record in caplog.records
+            1
+            for record in caplog.records
             if record.levelname == "WARNING"
             and "no data points available" in record.message
         )
@@ -57,7 +63,8 @@ async def test_no_data_warning_logged_after_threshold(mock_robovac, mock_vacuum_
 
         # Assert - warning should appear twice
         final_warning_count = sum(
-            1 for record in caplog.records
+            1
+            for record in caplog.records
             if record.levelname == "WARNING"
             and "no data points available" in record.message
         )
@@ -66,7 +73,9 @@ async def test_no_data_warning_logged_after_threshold(mock_robovac, mock_vacuum_
 
 
 @pytest.mark.asyncio
-async def test_no_data_warning_not_logged_before_threshold(mock_robovac, mock_vacuum_data: Any, caplog) -> None:
+async def test_no_data_warning_not_logged_before_threshold(
+    mock_robovac, mock_vacuum_data: Any, caplog
+) -> None:
     """Test that no data warning is not logged again before 5 minute threshold."""
     # Arrange
     mock_robovac._dps = None
@@ -77,7 +86,8 @@ async def test_no_data_warning_not_logged_before_threshold(mock_robovac, mock_va
         # Act - first call logs warning
         entity.update_entity_values()
         initial_warning_count = sum(
-            1 for record in caplog.records
+            1
+            for record in caplog.records
             if record.levelname == "WARNING"
             and "no data points available" in record.message
         )
@@ -90,7 +100,8 @@ async def test_no_data_warning_not_logged_before_threshold(mock_robovac, mock_va
 
         # Assert - warning should still appear only once
         final_warning_count = sum(
-            1 for record in caplog.records
+            1
+            for record in caplog.records
             if record.levelname == "WARNING"
             and "no data points available" in record.message
         )
@@ -99,7 +110,9 @@ async def test_no_data_warning_not_logged_before_threshold(mock_robovac, mock_va
 
 
 @pytest.mark.asyncio
-async def test_data_recovery_info_logged(mock_robovac, mock_vacuum_data: Any, caplog) -> None:
+async def test_data_recovery_info_logged(
+    mock_robovac, mock_vacuum_data: Any, caplog
+) -> None:
     """Test that info message is logged when data becomes available after warning."""
     # Arrange
     mock_robovac._dps = None
@@ -116,7 +129,8 @@ async def test_data_recovery_info_logged(mock_robovac, mock_vacuum_data: Any, ca
 
         # Assert - info message should be logged
         info_messages = [
-            record for record in caplog.records
+            record
+            for record in caplog.records
             if record.levelname == "INFO"
             and "Data points now available" in record.message
         ]
@@ -124,7 +138,9 @@ async def test_data_recovery_info_logged(mock_robovac, mock_vacuum_data: Any, ca
 
 
 @pytest.mark.asyncio
-async def test_no_info_logged_when_data_always_available(mock_robovac, mock_vacuum_data: Any, caplog) -> None:
+async def test_no_info_logged_when_data_always_available(
+    mock_robovac, mock_vacuum_data: Any, caplog
+) -> None:
     """Test that no info message is logged when data is always available."""
     # Arrange
     mock_robovac._dps = {"103": 100, "15": "Charging", "106": 0}
@@ -139,7 +155,8 @@ async def test_no_info_logged_when_data_always_available(mock_robovac, mock_vacu
 
         # Assert - no info message should be logged
         info_messages = [
-            record for record in caplog.records
+            record
+            for record in caplog.records
             if record.levelname == "INFO"
             and "Data points now available" in record.message
         ]
@@ -147,7 +164,9 @@ async def test_no_info_logged_when_data_always_available(mock_robovac, mock_vacu
 
 
 @pytest.mark.asyncio
-async def test_warning_state_resets_after_data_recovery(mock_robovac, mock_vacuum_data: Any, caplog) -> None:
+async def test_warning_state_resets_after_data_recovery(
+    mock_robovac, mock_vacuum_data: Any, caplog
+) -> None:
     """Test that warning state resets after data recovery and can be logged again."""
     # Arrange
     mock_robovac._dps = None
@@ -158,7 +177,8 @@ async def test_warning_state_resets_after_data_recovery(mock_robovac, mock_vacuu
         # Act - first no data period
         entity.update_entity_values()
         first_warning_count = sum(
-            1 for record in caplog.records
+            1
+            for record in caplog.records
             if record.levelname == "WARNING"
             and "no data points available" in record.message
         )
@@ -173,7 +193,8 @@ async def test_warning_state_resets_after_data_recovery(mock_robovac, mock_vacuu
 
         # Assert - warning should be logged twice (once for each no-data period)
         final_warning_count = sum(
-            1 for record in caplog.records
+            1
+            for record in caplog.records
             if record.levelname == "WARNING"
             and "no data points available" in record.message
         )
