@@ -41,9 +41,11 @@ class T2277(RobovacModelDetails):
             },
         },
         RobovacCommand.START_PAUSE: {
+            # Note: Uses same DPS 152 as MODE, so only "pause" is defined to avoid
+            # conflicts when both MODE and START_PAUSE are sent in same payload.
+            # Resume from pause uses MODE "nosweep" instead.
             "code": 152,
             "values": {
-                "start": "AggO",         # method=RESUME_TASK (14)
                 "pause": "AggN",         # method=PAUSE_TASK (13)
             },
         },
