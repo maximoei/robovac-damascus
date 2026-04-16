@@ -41,7 +41,8 @@ def test_t2194_status_human_readable(mock_t2194_robovac) -> None:
     assert mock_t2194_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "Charging") == "Charging"
     assert mock_t2194_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "standby") == "Standby"
     assert mock_t2194_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "Sleeping") == "Sleeping"
-    assert mock_t2194_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "recharge_needed") == "Recharge needed"
+    result = mock_t2194_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "recharge_needed")
+    assert result == "Recharge needed"
 
 
 def test_t2194_fan_speed_dps_code(mock_t2194_robovac) -> None:

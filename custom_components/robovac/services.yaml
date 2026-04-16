@@ -1,3 +1,35 @@
+send_raw_dps:
+  name: Send Raw DPS
+  description: >
+    Send a raw value to any DPS (Data Point Status) code on the device. Use
+    this for advanced control of DPS codes not yet modelled by the integration,
+    or for debugging. The value is forwarded verbatim — no encoding is applied.
+    Base64-encoded protobuf strings, plain strings, or integers are all
+    accepted as values, matching whatever the DPS code expects.
+  target:
+    entity:
+      domain: vacuum
+      integration: robovac
+  fields:
+    dps:
+      name: DPS Code
+      description: Integer DPS code to write (e.g. 152 for mode control).
+      required: true
+      example: "152"
+      selector:
+        number:
+          min: 1
+          mode: box
+    value:
+      name: Value
+      description: >
+        Value to send for the DPS code. Strings (including base64-encoded
+        protobuf payloads) and numbers are both accepted.
+      required: true
+      example: "\"AggG\""
+      selector:
+        text:
+
 start_room_clean:
   name: Start Room Clean
   description: >

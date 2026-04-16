@@ -50,7 +50,8 @@ def test_t2118_status_human_readable(mock_t2118_robovac) -> None:
     assert mock_t2118_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "Running") == "Running"
     assert mock_t2118_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "standby") == "Standby"
     assert mock_t2118_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "Sleeping") == "Sleeping"
-    assert mock_t2118_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "recharge_needed") == "Recharge needed"
+    result = mock_t2118_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "recharge_needed")
+    assert result == "Recharge needed"
 
 
 def test_t2118_error_human_readable(mock_t2118_robovac) -> None:

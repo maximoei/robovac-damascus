@@ -142,7 +142,8 @@ def _as_varint(val: Any) -> int | None:
         return val
     if isinstance(val, bytes):
         inner = _parse_proto(val)
-        return inner.get(1)
+        v = inner.get(1)
+        return int(v) if isinstance(v, int) else None
     return None
 
 

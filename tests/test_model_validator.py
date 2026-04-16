@@ -35,7 +35,8 @@ class TestSeriesDetection:
 
     def test_detect_x_series(self) -> None:
         """Test detection of X series models."""
-        # X series models: T2080, T2117, T2118, T2119, T2120, T2128, T2130, T2132, T2181, T2190, T2192, T2193, T2194, T2250, T2251, T2252, T2253, T2254, T2255, T2259, T2262
+        # X series models: T2080, T2117-T2120, T2128, T2130, T2132, T2181, T2190-T2194,
+        # T2250-T2255, T2259, T2262
         assert detect_series("T2080") == "X"
         assert detect_series("T2118") == "X"
         assert detect_series("T2250") == "X"

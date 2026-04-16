@@ -61,7 +61,8 @@ def test_t2251_status_human_readable(mock_t2251_robovac) -> None:
     assert mock_t2251_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "Running") == "Running"
     assert mock_t2251_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "standby") == "Standby"
     assert mock_t2251_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "Sleeping") == "Sleeping"
-    assert mock_t2251_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "recharge_needed") == "Recharge needed"
+    result = mock_t2251_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "recharge_needed")
+    assert result == "Recharge needed"
 
 
 def test_t2251_error_code_mapping(mock_t2251_robovac) -> None:

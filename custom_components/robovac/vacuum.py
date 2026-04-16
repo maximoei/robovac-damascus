@@ -54,7 +54,16 @@ from .vacuums.base import RobovacCommand, RoboVacEntityFeature, TuyaCodes, TUYA_
 from .robovac import ModelNotSupportedException, RoboVac
 from .tuyalocalapi import TuyaException
 
+SERVICE_SEND_RAW_DPS = "send_raw_dps"
 SERVICE_START_ROOM_CLEAN = "start_room_clean"
+
+SERVICE_SEND_RAW_DPS_SCHEMA = vol.Schema(
+    {
+        vol.Required("entity_id"): cv.entity_ids,
+        vol.Required("dps"): vol.Coerce(int),
+        vol.Required("value"): vol.Any(str, vol.Coerce(int)),
+    }
+)
 
 SERVICE_START_ROOM_CLEAN_SCHEMA = vol.Schema(
     {
@@ -132,6 +141,27 @@ async def async_setup_entry(
             SERVICE_START_ROOM_CLEAN,
             handle_start_room_clean,
             schema=SERVICE_START_ROOM_CLEAN_SCHEMA,
+        )
+
+    # Register vacuum.send_raw_dps service once per HA instance.
+    if not hass.services.has_service(DOMAIN, SERVICE_SEND_RAW_DPS):
+
+        async def handle_send_raw_dps(call: ServiceCall) -> None:
+            """Handle the vacuum.send_raw_dps service call."""
+            entity_ids: list[str] = call.data["entity_id"]
+            dps: int = call.data["dps"]
+            value = call.data["value"]
+
+            for eid in entity_ids:
+                for vac_entity in hass.data[DOMAIN][CONF_VACS].values():
+                    if vac_entity.entity_id == eid:
+                        await vac_entity.async_send_raw_dps(dps, value)
+
+        hass.services.async_register(
+            DOMAIN,
+            SERVICE_SEND_RAW_DPS,
+            handle_send_raw_dps,
+            schema=SERVICE_SEND_RAW_DPS_SCHEMA,
         )
 
 
@@ -333,7 +363,7 @@ class RoboVacEntity(StateVacuumEntity):
                     self._attr_tuya_state
                 )
                 return None
-        elif self._attr_tuya_state == "Charging" or self._attr_tuya_state == "completed" or self._attr_tuya_state == "Completed" or self._attr_tuya_state == "recharging":
+        elif self._attr_tuya_state in ("Charging", "completed", "Completed", "recharging"):
             return VacuumActivity.DOCKED
         elif self._attr_tuya_state == "Recharge" or self._attr_tuya_state == "going_to_recharge":
             return VacuumActivity.RETURNING
@@ -1049,6 +1079,25 @@ class RoboVacEntity(StateVacuumEntity):
             payload,
         )
         await self.vacuum.async_set({dps_code: payload})
+
+    async def async_send_raw_dps(self, dps: int, value: Any) -> None:
+        """Send a raw value to an arbitrary DPS code on the device.
+
+        The value is forwarded verbatim to the Tuya local API with no additional
+        encoding.  This is useful for DPS codes not yet modelled by the
+        integration, or for advanced debugging.
+
+        Args:
+            dps: Integer DPS code to write (e.g. 152 for mode control).
+            value: Value to write.  Strings (including base64-encoded protobuf
+                   payloads) and integers are both accepted.
+        """
+        if self.vacuum is None:
+            _LOGGER.error("Cannot send raw DPS: vacuum not initialized")
+            return
+        dps_str = str(dps)
+        _LOGGER.debug("send_raw_dps: DPS %s = %r", dps_str, value)
+        await self.vacuum.async_set({dps_str: value})
 
     async def async_will_remove_from_hass(self) -> None:
         """Handle removal from Home Assistant."""

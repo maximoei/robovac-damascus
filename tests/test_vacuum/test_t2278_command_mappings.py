@@ -71,15 +71,17 @@ class TestT2278StatusCommand:
 
     def test_status_room_cleaning_values(self, mock_t2278_robovac: RoboVac) -> None:
         """Test T2278 room cleaning status values."""
-        assert mock_t2278_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "CAoCCAEQBTIA") == "Room Cleaning"
-        assert mock_t2278_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "CAoCCAEQBVIA") == "Room Positioning"
-        assert mock_t2278_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "CgoCCAEQBTICCAE=") == "Room Paused"
+        fn = mock_t2278_robovac.getRoboVacHumanReadableValue
+        assert fn(RobovacCommand.STATUS, "CAoCCAEQBTIA") == "Room Cleaning"
+        assert fn(RobovacCommand.STATUS, "CAoCCAEQBVIA") == "Room Positioning"
+        assert fn(RobovacCommand.STATUS, "CgoCCAEQBTICCAE=") == "Room Paused"
 
     def test_status_zone_cleaning_values(self, mock_t2278_robovac: RoboVac) -> None:
         """Test T2278 zone cleaning status values."""
-        assert mock_t2278_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "CAoCCAIQBTIA") == "Zone Cleaning"
-        assert mock_t2278_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "CAoCCAIQBVIA") == "Zone Positioning"
-        assert mock_t2278_robovac.getRoboVacHumanReadableValue(RobovacCommand.STATUS, "CgoCCAIQBTICCAE=") == "Zone Paused"
+        fn = mock_t2278_robovac.getRoboVacHumanReadableValue
+        assert fn(RobovacCommand.STATUS, "CAoCCAIQBTIA") == "Zone Cleaning"
+        assert fn(RobovacCommand.STATUS, "CAoCCAIQBVIA") == "Zone Positioning"
+        assert fn(RobovacCommand.STATUS, "CgoCCAIQBTICCAE=") == "Zone Paused"
 
 
 class TestT2278FanSpeedCommand:
