@@ -44,6 +44,7 @@ class RobovacCommand(StrEnum):
     WORK_STATUS_V2 = "work_status_v2"
     ACTIVE_ERRORS = "active_errors"
     LAST_CLEAN = "last_clean"
+    ROOM_CLEAN = "room_clean"
 
 
 class TuyaCodes(StrEnum):

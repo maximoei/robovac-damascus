@@ -41,7 +41,9 @@ from homeassistant.const import (
     CONF_MODEL,
     CONF_NAME,
 )
-from homeassistant.core import HomeAssistant
+import voluptuous as vol
+from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -51,6 +53,22 @@ from .errors import getErrorMessage
 from .vacuums.base import RobovacCommand, RoboVacEntityFeature, TuyaCodes, TUYA_CONSUMABLES_CODES
 from .robovac import ModelNotSupportedException, RoboVac
 from .tuyalocalapi import TuyaException
+
+SERVICE_START_ROOM_CLEAN = "start_room_clean"
+
+SERVICE_START_ROOM_CLEAN_SCHEMA = vol.Schema(
+    {
+        vol.Required("entity_id"): cv.entity_ids,
+        vol.Required("room_ids"): [vol.Coerce(int)],
+        vol.Optional("clean_times", default=1): vol.All(
+            vol.Coerce(int), vol.Range(min=1, max=3)
+        ),
+        vol.Optional("map_id", default=0): vol.All(vol.Coerce(int), vol.Range(min=0)),
+        vol.Optional("releases", default=0): vol.All(
+            vol.Coerce(int), vol.Range(min=0)
+        ),
+    }
+)
 
 ATTR_BATTERY_ICON = "battery_icon"
 ATTR_ERROR = "error"
@@ -88,6 +106,31 @@ async def async_setup_entry(
         entity = RoboVacEntity(item)
         hass.data[DOMAIN][CONF_VACS][item[CONF_ID]] = entity
         async_add_entities([entity])
+
+    # Register vacuum.start_room_clean service once per HA instance.
+    if not hass.services.has_service(DOMAIN, SERVICE_START_ROOM_CLEAN):
+
+        async def handle_start_room_clean(call: ServiceCall) -> None:
+            """Handle the vacuum.start_room_clean service call."""
+            entity_ids: list[str] = call.data["entity_id"]
+            room_ids: list[int] = call.data["room_ids"]
+            clean_times: int = call.data["clean_times"]
+            map_id: int = call.data["map_id"]
+            releases: int = call.data["releases"]
+
+            for eid in entity_ids:
+                for vac_entity in hass.data[DOMAIN][CONF_VACS].values():
+                    if vac_entity.entity_id == eid:
+                        await vac_entity.async_start_room_clean(
+                            room_ids, clean_times, map_id, releases
+                        )
+
+        hass.services.async_register(
+            DOMAIN,
+            SERVICE_START_ROOM_CLEAN,
+            handle_start_room_clean,
+            schema=SERVICE_START_ROOM_CLEAN_SCHEMA,
+        )
 
 
 class RoboVacEntity(StateVacuumEntity):
@@ -947,6 +990,57 @@ class RoboVacEntity(StateVacuumEntity):
             # and the vacuum ignores the start command.
             await asyncio.sleep(1)
             await self.vacuum.async_set({TuyaCodes.START_PAUSE: True})
+
+    async def async_start_room_clean(
+        self,
+        room_ids: list[int],
+        clean_times: int = 1,
+        map_id: int = 0,
+        releases: int = 0,
+    ) -> None:
+        """Send a room-specific clean command via DPS 152 (protobuf models only).
+
+        Builds a ModeCtrlRequest / START_SELECT_ROOMS_CLEAN payload using the
+        model's encode_room_clean classmethod and dispatches it on DPS 152.
+
+        Models that don't implement encode_room_clean (non-protobuf models) are
+        not supported; a warning is logged and the call is a no-op.
+
+        Args:
+            room_ids: Device-assigned room IDs from the vacuum's stored map.
+            clean_times: Number of cleaning passes per room (1–3).
+            map_id: Map identifier (0 → device uses currently loaded map).
+            releases: Map version correction number (0 → omit field).
+        """
+        if self.vacuum is None:
+            _LOGGER.error("Cannot start room clean: vacuum not initialized")
+            return
+
+        if not hasattr(self.vacuum.model_details, "encode_room_clean"):
+            _LOGGER.warning(
+                "Model %s does not support room-specific cleaning via protobuf "
+                "(encode_room_clean not implemented)",
+                self._attr_model_code,
+            )
+            return
+
+        if not room_ids:
+            _LOGGER.warning("start_room_clean called with empty room_ids list")
+            return
+
+        payload = self.vacuum.model_details.encode_room_clean(
+            room_ids, clean_times, map_id, releases
+        )
+        dps_code = self.get_dps_code("ROOM_CLEAN")
+        _LOGGER.debug(
+            "Room clean: rooms=%s clean_times=%d map_id=%d → DPS %s payload=%s",
+            room_ids,
+            clean_times,
+            map_id,
+            dps_code,
+            payload,
+        )
+        await self.vacuum.async_set({dps_code: payload})
 
     async def async_will_remove_from_hass(self) -> None:
         """Handle removal from Home Assistant."""

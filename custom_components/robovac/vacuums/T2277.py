@@ -21,6 +21,7 @@ class T2277(RobovacModelDetails):
     robovac_features = (
         RoboVacEntityFeature.DO_NOT_DISTURB
         | RoboVacEntityFeature.BOOST_IQ
+        | RoboVacEntityFeature.ROOM
     )
     commands = {
         RobovacCommand.MODE: {
@@ -156,6 +157,17 @@ class T2277(RobovacModelDetails):
             # Decoded by decode_dps() via proto_decode.decode_analysis_response().
             "code": 179,
         },
+        RobovacCommand.ROOM_CLEAN: {
+            # DPS 152 — ModeCtrlRequest with method=START_SELECT_ROOMS_CLEAN (1)
+            # Payload is built dynamically by encode_room_clean(); no static
+            # "values" dict because the payload depends on the requested room IDs.
+            # See SelectRoomsClean in control.proto:
+            #   repeated Room rooms = 1;  { uint32 id=1; uint32 order=2; }
+            #   uint32 clean_times = 2;
+            #   uint32 map_id      = 3;   (0 → omit, device uses current map)
+            #   uint32 releases    = 4;   (0 → omit)
+            "code": 152,
+        },
     }
 
     @classmethod
@@ -213,3 +225,30 @@ class T2277(RobovacModelDetails):
         except Exception as exc:
             _LOGGER.warning("proto_decode failed for DPS %d value %r: %s", dps_code, raw_b64, exc)
         return None
+
+    @classmethod
+    def encode_room_clean(
+        cls,
+        room_ids: list[int],
+        clean_times: int = 1,
+        map_id: int = 0,
+        releases: int = 0,
+    ) -> str:
+        """Encode a DPS 152 payload for START_SELECT_ROOMS_CLEAN (method=1).
+
+        Builds a ModeCtrlRequest with the SelectRoomsClean param (oneof field 4).
+        Each room ID is wrapped in a Room sub-message {id, order} as required by
+        control.proto.  order defaults to 1-based index position.
+
+        Args:
+            room_ids: Device-assigned room IDs from the stored map.
+            clean_times: Number of cleaning passes (≥ 1).
+            map_id: Map identifier (0 → device uses the currently loaded map).
+            releases: Map version correction number (0 → omit).
+
+        Returns:
+            Base64-encoded protobuf string ready to send on DPS 152.
+        """
+        from custom_components.robovac.proto_encode import encode_mode_ctrl_rooms
+        rooms = [{"id": rid, "order": i + 1} for i, rid in enumerate(room_ids)]
+        return encode_mode_ctrl_rooms(rooms, clean_times, map_id, releases)

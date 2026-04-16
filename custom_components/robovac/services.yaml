@@ -1,0 +1,52 @@
+start_room_clean:
+  name: Start Room Clean
+  description: >
+    Clean specific rooms by ID on protobuf-based models (T2277 and compatible).
+    Room IDs must match the map stored on the device. The vacuum must be docked
+    or idle for the command to take effect.
+  target:
+    entity:
+      domain: vacuum
+      integration: robovac
+  fields:
+    room_ids:
+      name: Room IDs
+      description: >
+        List of room IDs to clean, as integers assigned by the vacuum's internal
+        map. Example: [1, 2] cleans rooms 1 and 2.
+      required: true
+      example: "[1, 2]"
+      selector:
+        object:
+    clean_times:
+      name: Clean Times
+      description: Number of cleaning passes per room (1–3).
+      required: false
+      default: 1
+      selector:
+        number:
+          min: 1
+          max: 3
+          mode: box
+    map_id:
+      name: Map ID
+      description: >
+        Internal map identifier stored on the device. Leave at 0 to use the
+        currently active map (recommended for most users).
+      required: false
+      default: 0
+      selector:
+        number:
+          min: 0
+          mode: box
+    releases:
+      name: Map Releases
+      description: >
+        Map version correction number. Leave at 0 unless you know the specific
+        map version to target.
+      required: false
+      default: 0
+      selector:
+        number:
+          min: 0
+          mode: box
