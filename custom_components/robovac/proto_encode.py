@@ -106,6 +106,7 @@ def encode_mode_ctrl_rooms(
     clean_times: int = 1,
     map_id: int = 0,
     releases: int = 0,
+    customize: bool = False,
 ) -> str:
     """Encode ModeCtrlRequest for START_SELECT_ROOMS_CLEAN (method=1).
 
@@ -115,18 +116,25 @@ def encode_mode_ctrl_rooms(
     SelectRoomsClean schema (control.proto):
       message Room { uint32 id = 1; uint32 order = 2; }
       repeated Room rooms      = 1;
-      uint32       clean_times = 2;
+      uint32       clean_times = 2;   // used only in GENERAL mode
       uint32       map_id      = 3;   // 0 → field omitted
       uint32       releases    = 4;   // 0 → field omitted
-      Mode         mode        = 5;   // 0=GENERAL (default, omitted)
+      Mode         mode        = 5;   // 0=GENERAL (default, omitted), 1=CUSTOMIZE
 
     Args:
         rooms: List of dicts with required key "id" and optional "order".
                "order" defaults to 1-based index position.
-        clean_times: Number of cleaning passes per room (≥ 1).
+        clean_times: Number of cleaning passes per room.  Ignored by the
+                     device when customize=True (each room uses its own
+                     stored clean_times from MapEditRequest.RoomsCustom).
         map_id: Map identifier from device storage (0 → omit field, device
                 uses current map).
         releases: Map version correction number (0 → omit).
+        customize: When True, sets SelectRoomsClean.mode = CUSTOMIZE (1) so
+                   the device uses per-room custom params (fan speed, clean
+                   type, sweep count) already stored via the eufy app.
+                   When False (default), uses GENERAL mode with the global
+                   area_clean_param from DPS 154.
     """
     src = b""
     for i, room in enumerate(rooms):
@@ -138,6 +146,8 @@ def encode_mode_ctrl_rooms(
         src += _field_varint(3, map_id)
     if releases:
         src += _field_varint(4, releases)
+    if customize:
+        src += _field_varint(5, 1)                            # Mode.CUSTOMIZE
 
     msg = _field_varint(1, 1)        # method = START_SELECT_ROOMS_CLEAN
     msg += _field_bytes(4, src)      # oneof select_rooms_clean = 4

@@ -230,3 +230,30 @@ class TestEncodeModeCtrlRooms:
 
     def test_different_from_standby(self) -> None:
         assert encode_mode_ctrl_rooms([{"id": 1}]) != encode_mode_ctrl_simple(0)
+
+    # ------------------------------------------------------------------
+    # customize=True  →  SelectRoomsClean.mode = CUSTOMIZE (field 5 = 1)
+    # ------------------------------------------------------------------
+
+    def test_customize_false_omits_mode_field(self) -> None:
+        """GENERAL mode (default): field 5 absent from SelectRoomsClean."""
+        from custom_components.robovac.proto_decode import _parse_proto, _strip_length_prefix
+        payload = encode_mode_ctrl_rooms([{"id": 1}], customize=False)
+        src_fields = _parse_proto(_parse_proto(_strip_length_prefix(payload))[4])
+        assert 5 not in src_fields
+
+    def test_customize_true_sets_mode_field_to_1(self) -> None:
+        """CUSTOMIZE mode: field 5 = 1 in SelectRoomsClean."""
+        from custom_components.robovac.proto_decode import _parse_proto, _strip_length_prefix
+        payload = encode_mode_ctrl_rooms([{"id": 1}], customize=True)
+        src_fields = _parse_proto(_parse_proto(_strip_length_prefix(payload))[4])
+        assert src_fields.get(5) == 1  # Mode.CUSTOMIZE
+
+    def test_customize_true_still_decodes_to_room(self) -> None:
+        """Customize payload must still decode to 'room' (method=1 unchanged)."""
+        payload = encode_mode_ctrl_rooms([{"id": 1}], customize=True)
+        assert decode_mode_ctrl(payload) == "room"
+
+    def test_customize_produces_different_payload_than_general(self) -> None:
+        rooms = [{"id": 1}]
+        assert encode_mode_ctrl_rooms(rooms, customize=False) != encode_mode_ctrl_rooms(rooms, customize=True)

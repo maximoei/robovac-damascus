@@ -233,6 +233,7 @@ class T2277(RobovacModelDetails):
         clean_times: int = 1,
         map_id: int = 0,
         releases: int = 0,
+        customize: bool = False,
     ) -> str:
         """Encode a DPS 152 payload for START_SELECT_ROOMS_CLEAN (method=1).
 
@@ -242,13 +243,20 @@ class T2277(RobovacModelDetails):
 
         Args:
             room_ids: Device-assigned room IDs from the stored map.
-            clean_times: Number of cleaning passes (≥ 1).
+            clean_times: Number of cleaning passes.  Ignored by the device
+                         when customize=True (per-room count comes from stored
+                         custom params set via the eufy app).
             map_id: Map identifier (0 → device uses the currently loaded map).
             releases: Map version correction number (0 → omit).
+            customize: When True, sends SelectRoomsClean.mode = CUSTOMIZE so
+                       the device applies the per-room fan speed, clean type,
+                       and sweep count already stored on the map (configured
+                       via the eufy app).  When False, uses the global
+                       area_clean_param from DPS 154 with clean_times passes.
 
         Returns:
             Base64-encoded protobuf string ready to send on DPS 152.
         """
         from custom_components.robovac.proto_encode import encode_mode_ctrl_rooms
         rooms = [{"id": rid, "order": i + 1} for i, rid in enumerate(room_ids)]
-        return encode_mode_ctrl_rooms(rooms, clean_times, map_id, releases)
+        return encode_mode_ctrl_rooms(rooms, clean_times, map_id, releases, customize)

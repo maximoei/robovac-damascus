@@ -2,8 +2,9 @@ start_room_clean:
   name: Start Room Clean
   description: >
     Clean specific rooms by ID on protobuf-based models (T2277 and compatible).
-    Room IDs must match the map stored on the device. The vacuum must be docked
-    or idle for the command to take effect.
+    Room IDs must match the map stored on the device. Use customize: true to
+    apply the per-room fan speed and sweep count already configured in the eufy
+    app (SelectRoomsClean CUSTOMIZE mode). The vacuum must be docked or idle.
   target:
     entity:
       domain: vacuum
@@ -50,3 +51,14 @@ start_room_clean:
         number:
           min: 0
           mode: box
+    customize:
+      name: Customize
+      description: >
+        When enabled, uses the per-room custom settings already stored on the
+        device map via the eufy app (fan speed, clean type, sweep count per
+        room). When disabled, all selected rooms are cleaned with the global
+        settings from DPS 154 and the clean_times value above.
+      required: false
+      default: false
+      selector:
+        boolean:

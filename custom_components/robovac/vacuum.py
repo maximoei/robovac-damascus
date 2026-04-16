@@ -67,6 +67,7 @@ SERVICE_START_ROOM_CLEAN_SCHEMA = vol.Schema(
         vol.Optional("releases", default=0): vol.All(
             vol.Coerce(int), vol.Range(min=0)
         ),
+        vol.Optional("customize", default=False): cv.boolean,
     }
 )
 
@@ -117,12 +118,13 @@ async def async_setup_entry(
             clean_times: int = call.data["clean_times"]
             map_id: int = call.data["map_id"]
             releases: int = call.data["releases"]
+            customize: bool = call.data["customize"]
 
             for eid in entity_ids:
                 for vac_entity in hass.data[DOMAIN][CONF_VACS].values():
                     if vac_entity.entity_id == eid:
                         await vac_entity.async_start_room_clean(
-                            room_ids, clean_times, map_id, releases
+                            room_ids, clean_times, map_id, releases, customize
                         )
 
         hass.services.async_register(
@@ -997,6 +999,7 @@ class RoboVacEntity(StateVacuumEntity):
         clean_times: int = 1,
         map_id: int = 0,
         releases: int = 0,
+        customize: bool = False,
     ) -> None:
         """Send a room-specific clean command via DPS 152 (protobuf models only).
 
@@ -1008,9 +1011,13 @@ class RoboVacEntity(StateVacuumEntity):
 
         Args:
             room_ids: Device-assigned room IDs from the vacuum's stored map.
-            clean_times: Number of cleaning passes per room (1–3).
+            clean_times: Number of cleaning passes per room (1–3).  Ignored by
+                         the device when customize=True.
             map_id: Map identifier (0 → device uses currently loaded map).
             releases: Map version correction number (0 → omit field).
+            customize: When True, sends SelectRoomsClean.mode = CUSTOMIZE so
+                       the device uses per-room fan speed and sweep count
+                       already stored on the map via the eufy app.
         """
         if self.vacuum is None:
             _LOGGER.error("Cannot start room clean: vacuum not initialized")
@@ -1029,14 +1036,15 @@ class RoboVacEntity(StateVacuumEntity):
             return
 
         payload = self.vacuum.model_details.encode_room_clean(
-            room_ids, clean_times, map_id, releases
+            room_ids, clean_times, map_id, releases, customize
         )
         dps_code = self.get_dps_code("ROOM_CLEAN")
         _LOGGER.debug(
-            "Room clean: rooms=%s clean_times=%d map_id=%d → DPS %s payload=%s",
+            "Room clean: rooms=%s clean_times=%d map_id=%d customize=%s → DPS %s payload=%s",
             room_ids,
             clean_times,
             map_id,
+            customize,
             dps_code,
             payload,
         )

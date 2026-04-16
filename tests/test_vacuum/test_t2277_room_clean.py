@@ -130,6 +130,32 @@ class TestT2277EncodeRoomClean:
         src_fields = _parse_proto(outer[4])
         assert src_fields.get(2) == 2  # SelectRoomsClean.clean_times
 
+    def test_customize_false_omits_mode_field(self) -> None:
+        """Default (GENERAL) mode must not encode field 5."""
+        from custom_components.robovac.proto_decode import _parse_proto, _strip_length_prefix
+        T2277 = self._model()
+        payload = T2277.encode_room_clean([1], customize=False)
+        src_fields = _parse_proto(_parse_proto(_strip_length_prefix(payload))[4])
+        assert 5 not in src_fields
+
+    def test_customize_true_sets_mode_customize(self) -> None:
+        """CUSTOMIZE mode must encode field 5 = 1 in SelectRoomsClean."""
+        from custom_components.robovac.proto_decode import _parse_proto, _strip_length_prefix
+        T2277 = self._model()
+        payload = T2277.encode_room_clean([1, 2], customize=True)
+        src_fields = _parse_proto(_parse_proto(_strip_length_prefix(payload))[4])
+        assert src_fields.get(5) == 1  # Mode.CUSTOMIZE
+
+    def test_customize_true_still_decodes_to_room(self) -> None:
+        """Method=1 is preserved; decode must still return 'room'."""
+        T2277 = self._model()
+        payload = T2277.encode_room_clean([1], customize=True)
+        assert decode_mode_ctrl(payload) == "room"
+
+    def test_customize_produces_different_payload(self) -> None:
+        T2277 = self._model()
+        assert T2277.encode_room_clean([1], customize=False) != T2277.encode_room_clean([1], customize=True)
+
 
 # ---------------------------------------------------------------------------
 # async_start_room_clean entity method
@@ -223,3 +249,23 @@ class TestAsyncStartRoomClean:
         entity, mock_vac = self._make_entity()
         await entity.async_start_room_clean([])
         mock_vac.async_set.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_customize_true_sets_mode_field_in_payload(self) -> None:
+        """customize=True must produce a payload with SelectRoomsClean.mode=1."""
+        from custom_components.robovac.proto_decode import _parse_proto, _strip_length_prefix
+        entity, mock_vac = self._make_entity()
+        await entity.async_start_room_clean([1, 2], customize=True)
+        payload = mock_vac.async_set.call_args[0][0]["152"]
+        src_fields = _parse_proto(_parse_proto(_strip_length_prefix(payload))[4])
+        assert src_fields.get(5) == 1  # Mode.CUSTOMIZE
+
+    @pytest.mark.asyncio
+    async def test_customize_false_omits_mode_field_in_payload(self) -> None:
+        """customize=False (default) must not encode the mode field."""
+        from custom_components.robovac.proto_decode import _parse_proto, _strip_length_prefix
+        entity, mock_vac = self._make_entity()
+        await entity.async_start_room_clean([1, 2], customize=False)
+        payload = mock_vac.async_set.call_args[0][0]["152"]
+        src_fields = _parse_proto(_parse_proto(_strip_length_prefix(payload))[4])
+        assert 5 not in src_fields
