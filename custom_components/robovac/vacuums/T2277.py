@@ -47,6 +47,10 @@ class T2277(RobovacModelDetails):
                 "start": "AggO",         # method=RESUME_TASK (14)
                 "pause": "AggN",         # method=PAUSE_TASK (13)
             },
+            # Note: DPS 156 is an alternative boolean start/pause toggle present on
+            # T2267 (base L60), but on T2277 (SES firmware) the primary control path
+            # is DPS 152 (ModeCtrlRequest).  DPS 156 is not mapped here to avoid
+            # ambiguity; use DPS 152 values above for all start/pause operations.
         },
         RobovacCommand.RETURN_HOME: {
             "code": 152,
@@ -78,6 +82,27 @@ class T2277(RobovacModelDetails):
             # Decoded by decode_dps() via proto_decode.decode_clean_param_response().
             "code": 154,
         },
+        RobovacCommand.DIRECTION: {
+            # DPS 155 — manual drive direction (write-only trigger, String W)
+            # Mirrors T2267 mapping. Values: brake, forward, back, left, right.
+            # Used for remote-control / manual drive mode.
+            "code": 155,
+            "values": {
+                "brake": "brake",
+                "forward": "forward",
+                "back": "back",
+                "left": "left",
+                "right": "right",
+            },
+        },
+        RobovacCommand.DO_NOT_DISTURB: {
+            # DPS 157 — do-not-disturb on/off toggle (Bool RW)
+            # Confirmed in T2267 (same 150+ DPS family).
+            # T2277 already declares RoboVacEntityFeature.DO_NOT_DISTURB; this
+            # code was missing from the mapping, causing fallback to TuyaCodes
+            # default "107" which does not exist on this device.
+            "code": 157,
+        },
         RobovacCommand.FAN_SPEED: {
             "code": 158,
             "values": {
@@ -86,6 +111,14 @@ class T2277(RobovacModelDetails):
                 "turbo": "Turbo",
                 "max": "Max",
             },
+        },
+        RobovacCommand.BOOST_IQ: {
+            # DPS 159 — BoostIQ on/off toggle (Bool RW)
+            # Auto-increases suction power on carpet. Confirmed in T2267.
+            # T2277 already declares RoboVacEntityFeature.BOOST_IQ; this code
+            # was missing, causing fallback to TuyaCodes default "118" which
+            # does not exist on this device.
+            "code": 159,
         },
         RobovacCommand.LOCATE: {
             "code": 160,

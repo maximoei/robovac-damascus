@@ -1189,6 +1189,48 @@ class TuyaDevice:
         if response is not None:
             await self.async_update_state(response)
 
+    async def async_status_all(self) -> dict[str, Any]:
+        """Request all known DPS values from the device and log the result.
+
+        For v3.4+ (v3.5) devices that reject DP_QUERY (0x0a), this sends
+        UPDATEDPS (0x12) with every DPS code declared in the model's command
+        definitions.  The device should reply with a gratuitous-update (0x08)
+        carrying the current values, which the normal update path will process.
+
+        For older (< v3.4) devices the standard GET_COMMAND (0x0a) is used.
+
+        The current _dps snapshot is logged at INFO level immediately after the
+        request is queued so the caller can see the last-known state even if the
+        device does not respond.
+
+        Returns:
+            A copy of the current _dps dict at the time of the call.
+        """
+        if self.version >= (3, 4):
+            # Collect every unique DPS code declared in the model's commands dict.
+            dps_ids = list({
+                str(v["code"])
+                for v in self.model_details.commands.values()
+                if isinstance(v, dict) and "code" in v
+            })
+            dps_ids_sorted = sorted(dps_ids, key=lambda x: int(x))
+            self._LOGGER.info(
+                "tuya status all — sending UPDATEDPS for %d DPS IDs: %s",
+                len(dps_ids_sorted),
+                dps_ids_sorted,
+            )
+            await self._async_request_dps_update(dps_ids)
+        else:
+            self._LOGGER.info("tuya status all — sending GET_COMMAND (0x0a)")
+            await self.async_get()
+
+        self._LOGGER.info(
+            "tuya status all — current DPS snapshot (%d entries): %s",
+            len(self._dps),
+            self._dps,
+        )
+        return dict(self._dps)
+
     async def async_set(self, dps: dict[str, Any]) -> None:
         """Set the state of the device.
 

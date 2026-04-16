@@ -94,3 +94,22 @@ start_room_clean:
       default: false
       selector:
         boolean:
+
+request_dps_status:
+  name: Request DPS Status
+  description: >
+    Send a Tuya "status all" request to the vacuum and log every raw DPS
+    value the device currently reports at INFO level. Useful for discovering
+    and mapping unknown DPS codes without needing a packet capture.
+
+    For protocol 3.4+/3.5 devices (e.g. L60 SES / T2277) this sends
+    UPDATEDPS (0x12) with all DPS codes declared in the model; the device
+    replies via a gratuitous update (0x08) which is then logged.
+    For older (< 3.4) devices the standard DP_QUERY (0x0a) is used.
+
+    After calling this service, check the Home Assistant log for lines
+    containing "tuya status all" to see the current DPS snapshot.
+  target:
+    entity:
+      domain: vacuum
+      integration: robovac
