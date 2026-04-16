@@ -46,7 +46,7 @@ from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
 from homeassistant.helpers.entity import DeviceInfo
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.entity_platform import AddEntitiesCallback, async_get_current_platform
 
 from .const import CONF_VACS, DOMAIN, PING_RATE, REFRESH_RATE, TIMEOUT
 from .errors import getErrorMessage
@@ -163,6 +163,13 @@ async def async_setup_entry(
             handle_send_raw_dps,
             schema=SERVICE_SEND_RAW_DPS_SCHEMA,
         )
+
+    platform = async_get_current_platform()
+    platform.async_register_entity_service(
+        "request_dps_status",
+        {},
+        "async_request_dps_status",
+    )
 
 
 class RoboVacEntity(StateVacuumEntity):
@@ -1023,6 +1030,7 @@ class RoboVacEntity(StateVacuumEntity):
             await asyncio.sleep(1)
             await self.vacuum.async_set({TuyaCodes.START_PAUSE: True})
 
+<<<<<<< HEAD
     async def async_start_room_clean(
         self,
         room_ids: list[int],
@@ -1098,6 +1106,29 @@ class RoboVacEntity(StateVacuumEntity):
         dps_str = str(dps)
         _LOGGER.debug("send_raw_dps: DPS %s = %r", dps_str, value)
         await self.vacuum.async_set({dps_str: value})
+=======
+    async def async_request_dps_status(self) -> None:
+        """Service handler: request all DPS values from the device and log them.
+
+        Dispatches a Tuya UPDATEDPS (v3.4+/v3.5) or GET_COMMAND (older) to
+        the device, then logs the raw DPS snapshot at INFO level so that
+        unknown or unmapped DPS codes can be identified from the HA log.
+        """
+        if self.vacuum is None:
+            _LOGGER.error(
+                "Cannot request DPS status for %s: vacuum not initialized",
+                self._attr_name,
+            )
+            return
+
+        _LOGGER.info(
+            "DPS status request triggered for %s (model %s, protocol %s)",
+            self._attr_name,
+            self._attr_model_code,
+            self.vacuum.version,
+        )
+        await self.vacuum.async_status_all()
+>>>>>>> 019af0c (Add T2277 DPS 155/157/159 mappings and request_dps_status service)
 
     async def async_will_remove_from_hass(self) -> None:
         """Handle removal from Home Assistant."""
